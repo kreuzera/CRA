@@ -16,6 +16,8 @@ tmp/
 local.properties
 .settings/
 .loadpath
+*.class
+workbench.xmi
 
 # Eclipse Core
 .project
