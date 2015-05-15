@@ -1,2 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.util.LinkedHashMap"/>
+<fullyQualifiedTypeName name="opennlp.tools.postag.POSSample"/>
+<fullyQualifiedTypeName name="opennlp.tools.util.ObjectStream"/>
+<fullyQualifiedTypeName name="opennlp.tools.postag.POSTaggerME"/>
+<fullyQualifiedTypeName name="opennlp.tools.cmdline.PerformanceMonitor"/>
+<fullyQualifiedTypeName name="opennlp.tools.postag.POSModel"/>
+<fullyQualifiedTypeName name="java.io.File"/>
+<fullyQualifiedTypeName name="opennlp.tools.cmdline.postag.POSModelLoader"/>
+<fullyQualifiedTypeName name="opennlp.tools.util.PlainTextByLineStream"/>
+<fullyQualifiedTypeName name="java.io.StringReader"/>
+<fullyQualifiedTypeName name="opennlp.tools.tokenize.WhitespaceTokenizer"/>
+<fullyQualifiedTypeName name="opennlp.tools.chunker.ChunkerModel"/>
+<fullyQualifiedTypeName name="opennlp.tools.chunker.ChunkerME"/>
+<fullyQualifiedTypeName name="opennlp.tools.util.Span"/>
+<fullyQualifiedTypeName name="opennlp.tools.tokenize.TokenizerModel"/>
+<fullyQualifiedTypeName name="opennlp.tools.tokenize.Tokenizer"/>
+<fullyQualifiedTypeName name="opennlp.tools.tokenize.TokenizerME"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="java.util.LinkedList"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+</qualifiedTypeNameHistroy>
