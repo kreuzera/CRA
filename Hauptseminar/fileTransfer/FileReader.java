@@ -28,7 +28,7 @@ public class FileReader {
 	
 	private NodeList getFromXml(String folder){
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			File xmlFile = new File("C:/Users/Kai/Downloads/7a5203ab-9943-4adf-a603-6cf625331bdf/ebscohost export.xml");
+			File xmlFile = new File(folder);
 			Document doc = null;
 			DocumentBuilder db;
 			try {
