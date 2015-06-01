@@ -1,29 +1,18 @@
-package Model;
+package model;
 
 import java.util.LinkedList;
 
 public class Element {
 
-	/**
-	 * Save the String of the noun Phrase
-	 */
 	private String nounPhrase;
-	
-	
-	/**
-	 * List of all child-Elements
-	 */
 	private LinkedList<Element> neighbour;
-	
-	/**
-	 * Number of Elements connected with current Element
-	 */
 	private int degree;
-	
-	/**
-	 * Index for Unique identity
-	 */
 	private int index;
+	
+	public Element(String nounPhrase){
+		this.nounPhrase = nounPhrase;
+		this.neighbour = new LinkedList<Element>();
+	}
 	
 	public Element(String nounPhrase, int index){
 		this.nounPhrase = nounPhrase;
@@ -44,6 +33,7 @@ public class Element {
 	public void addNeighbour(Element e){
 		neighbour.add(e);
 	}
+	
 
 	/**
 	 * Remove Element e from List of children

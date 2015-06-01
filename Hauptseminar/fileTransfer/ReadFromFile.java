@@ -1,12 +1,12 @@
-package FileTransfer;
+package fileTransfer;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import Model.Element;
-import Model.Graph;
+import model.Element;
+import model.Graph;
 
 public class ReadFromFile {
 

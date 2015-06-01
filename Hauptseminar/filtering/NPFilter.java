@@ -1,4 +1,4 @@
-package FIltering;
+package filtering;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +26,7 @@ public class NPFilter {
 
 	
     static Set<String> nounPhrases = new HashSet<String>();
-    static String testSentence = "the quick brown fox jumps over the lazy dog";//"Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper. The lazy brown fox jumps over the fence. That fence was build by your mother.";
+    static String testSentence = "the quick brown fox jumps over the lazy dog. Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper. The lazy brown fox jumps over the fence. That fence was build by your mother.";
     static ParserModel chunkingModel;
     static SentenceModel sentenceModel;
     static POSModel taggerModel;
@@ -37,19 +37,7 @@ public class NPFilter {
     static double parseTime; 
     private static ArrayList<String[]> wordList = new ArrayList<String[]>();
     
-    
-    protected NPFilter(){
-    	/*try {
-    		loadInTime = System.currentTimeMillis();
-            
-			
-			System.out.println("Time to Load Models: "+(System.currentTimeMillis() - loadInTime)/1000);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
-
-    }
-    
+   
     public static NPFilter getInstance() {
         if(instance == null) {
            instance = new NPFilter();
@@ -77,7 +65,8 @@ public class NPFilter {
 		}
     	return wordList;
     	
-    }
+    }    
+
     
     
     public static void main(String args[]){
