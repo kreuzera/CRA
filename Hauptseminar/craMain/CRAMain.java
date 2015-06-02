@@ -81,7 +81,8 @@ public class CRAMain {
 				i++;
 				if(e!=first){
 					for(Element n: e.getNeighbour()){
-						first.addNeighbour(n);
+						if(!first.getNeighbour().contains(n))
+							first.addNeighbour(n);
 					}					
 				}					
 			}

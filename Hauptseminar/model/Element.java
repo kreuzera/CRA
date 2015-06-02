@@ -88,4 +88,11 @@ public class Element {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+	
+	@Override
+	public boolean equals(Object o){
+		if(o!=null && o instanceof Element && ((Element)o).getNounPhrase().equals(this.nounPhrase))
+			return true;
+		return false;
+	}
 }
