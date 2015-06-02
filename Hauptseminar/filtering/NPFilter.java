@@ -58,6 +58,7 @@ public class NPFilter {
      */
     public static ArrayList<String[]> GetTaggedWordsFromSentence(String sentence){
 		try {
+			wordList.clear();
 			wordList = WordTagger(WordTokenizer(sentence));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
