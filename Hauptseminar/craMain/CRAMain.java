@@ -44,7 +44,7 @@ public class CRAMain {
 		for(LinkFilterThread t: threadList){
 			try {
 				t.join();
-				System.out.println(t.getName()+" is alive? "+t.isAlive());
+//				System.out.println(t.getName()+" is alive? "+t.isAlive());
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
