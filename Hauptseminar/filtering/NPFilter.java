@@ -35,7 +35,7 @@ public class NPFilter {
 
     static double loadInTime;
     static double parseTime; 
-    private static ArrayList<String[]> wordList = new ArrayList<String[]>();
+    private ArrayList<String[]> wordList = new ArrayList<String[]>();
     
    
     public static NPFilter getInstance() {
@@ -56,7 +56,7 @@ public class NPFilter {
      * @param sentence
      * @return
      */
-    public static ArrayList<String[]> GetTaggedWordsFromSentence(String sentence){
+    public ArrayList<String[]> GetTaggedWordsFromSentence(String sentence){
 		try {
 			wordList.clear();
 			wordList = WordTagger(WordTokenizer(sentence));
@@ -70,20 +70,6 @@ public class NPFilter {
 
     
     
-    public static void main(String args[]){
-    	getInstance();
-    	parseTime = System.currentTimeMillis();
-    	//GetNounPhrases(testSentence);
-    	try {    			
-    		for(String[] s : WordTagger(WordTokenizer(testSentence))){
-    			System.out.println(s[0] + " "+ s[1]);
-    		}
-    			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-    	System.out.println("Time to actually Parse Sentence: "+(System.currentTimeMillis() - parseTime)/1000);
-    }
 
     /**
      * 
@@ -134,7 +120,7 @@ public class NPFilter {
 	    }
 	}
 
-	public static ArrayList<String[]> WordTagger(String[] words) throws IOException {
+	public ArrayList<String[]> WordTagger(String[] words) throws IOException {
 		if(taggerModel==null)
 			taggerModel = new POSModelLoader().load(new File("en-pos-maxent.bin"));
 		POSTaggerME tagger = new POSTaggerME(taggerModel);
