@@ -1,6 +1,7 @@
 package craMain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -17,8 +18,10 @@ import filtering.NPFilter;
 public class CRAMain {
 
 	public static void main(String[] args) {
+		long totalTime = System.currentTimeMillis();
 		FileReader fileReader = new FileReader();
-		NodeList abstracts = fileReader.getAbstracts("testFile/ebscohost export.xml");
+//		NodeList abstracts = fileReader.getAbstracts("testFile/ebscohost export.xml");
+		NodeList abstracts = fileReader.getAbstracts("testFile/8dc0a169-d1be-468a-b7a0-1a90a4ba3a50.xml");
 		
 		NPFilter npfilter = new NPFilter();
 		npfilter.GetTaggedWordsFromSentence("");
@@ -87,7 +90,8 @@ public class CRAMain {
 				}					
 			}
 		}
-		System.out.println(" finished in "+(System.currentTimeMillis()-start)+"ms. "+i+" nouns merged into "+nounPhrases.size()+" nouns. Printing in 5 Seconds");
+		System.out.println(" finished in "+(System.currentTimeMillis()-start)+"ms. "+i+" nouns merged into "+nounPhrases.size()+" nouns.");
+		System.out.println("Total time: "+(System.currentTimeMillis()-totalTime)+"ms. Printing in 5 Seconds");
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
@@ -95,13 +99,37 @@ public class CRAMain {
 			e.printStackTrace();
 		}
 		// Print
+		int k = 0;
+		LinkedList<Element> test = new LinkedList<Element>();
 		for(LinkedList<Element> eList: nounPhrases.values()){
-			String testung = eList.getFirst().getNounPhrase()+": ";
-			for(Element n: eList.getFirst().getNeighbour()){
-				testung += n.getNounPhrase()+", ";
-			}
-			System.out.println(testung);
+			test.add(eList.getFirst());
 		}
+		test.sort(new Comparator<Element>(){
+			@Override
+			public int compare(Element o1, Element o2) {
+				if(o1.getNeighbour().size()>o2.getNeighbour().size())
+					return -1;
+				if(o1.getNeighbour().size()<o2.getNeighbour().size())
+					return 1;
+				return 0;
+			}
+			
+		});
+		
+		for(Element e: test){
+			String testung = e.getNounPhrase()+": "+e.getNeighbour().size();
+			System.out.println(testung);
+			if(k>30)
+				break;
+			k++;
+		}
+//		for(LinkedList<Element> eList: nounPhrases.values()){
+//			String testung = eList.getFirst().getNounPhrase()+": ";
+//			for(Element n: eList.getFirst().getNeighbour()){
+//				testung += n.getNounPhrase()+", ";
+//			}
+//			System.out.println(testung);
+//		}
 
 
 	}

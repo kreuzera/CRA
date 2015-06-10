@@ -19,10 +19,12 @@ public class FileReader {
 	 * @return NodeList of Abstracts
 	 */
 	public NodeList getAbstracts(String url){
+		long start = System.currentTimeMillis();
 		NodeList nodeList = null;
 		if(url.endsWith(".xml"))
 			nodeList = getFromXml(url);
 		//TODO implement other formats
+		System.out.println("XML loaded in "+(System.currentTimeMillis()-start)+"ms");
 		return nodeList;
 	}
 	
