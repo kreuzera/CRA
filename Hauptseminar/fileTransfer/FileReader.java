@@ -22,10 +22,12 @@ public class FileReader {
 	 * @return NodeList of Abstracts
 	 */
 	public ConcurrentLinkedQueue<String> getAbstracts(String url){
+		long start = System.currentTimeMillis();
 		ConcurrentLinkedQueue<String> nodeList = null;
 		if(url.endsWith(".xml"))
 			nodeList = getAbstractsFromXml(url);
 		//TODO implement other formats
+		System.out.println("XML File read in "+(System.currentTimeMillis()-start)+"ms");
 		return nodeList;
 	}
 	

@@ -23,7 +23,7 @@ public class CRAMain {
 		long totalTime = System.currentTimeMillis();
 		FileReader fileReader = new FileReader();
 //		NodeList abstracts = fileReader.getAbstracts("testFile/ebscohost export.xml");
-		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("C:/Users/Kai/Downloads/8dc0a169-d1be-468a-b7a0-1a90a4ba3a50/8dc0a169-d1be-468a-b7a0-1a90a4ba3a50.xml");
+		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/8dc0a169-d1be-468a-b7a0-1a90a4ba3a50.xml");
 		
 		
 		NPFilter npfilter = new NPFilter();
