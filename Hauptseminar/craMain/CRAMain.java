@@ -22,7 +22,7 @@ public class CRAMain {
 	public static void main(String[] args) {
 		long totalTime = System.currentTimeMillis();
 		FileReader fileReader = new FileReader();
-//		NodeList abstracts = fileReader.getAbstracts("testFile/cra.xml");
+//		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/cra.xml");
 //		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/gamification.xml");
 		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/cloud.xml");
 		
