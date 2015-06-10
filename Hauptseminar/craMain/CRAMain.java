@@ -30,12 +30,13 @@ public class CRAMain {
 		NPFilter npfilter = new NPFilter();
 		npfilter.GetTaggedWordsFromSentence("");
 
-		ConcurrentHashMap<String, LinkedList<Element>> nounPhrases = new ConcurrentHashMap<String, LinkedList<Element>>();
+		ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases = new ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>>();
 		System.out.print("Tagging and linking ... ");
 		long start = System.currentTimeMillis();
 		LinkedList<LinkFilterThread> threadList = new LinkedList<LinkFilterThread>();
 		for(int i = 0; i<Runtime.getRuntime().availableProcessors(); i++){
 			LinkFilterThread thread = new LinkFilterThread(abstracts, nounPhrases);
+			thread.setName(Integer.toString(i));
 			threadList.add(thread);
 			thread.start();
 		}
@@ -43,6 +44,7 @@ public class CRAMain {
 		for(LinkFilterThread t: threadList){
 			try {
 				t.join();
+				System.out.println(t.getName()+" is alive? "+t.isAlive());
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -55,8 +57,9 @@ public class CRAMain {
 		System.out.print("Merging ...");
 		start = System.currentTimeMillis();
 		int i = 0;
-		for(LinkedList<Element> eList: nounPhrases.values()){
-			Element first = eList.getFirst();
+		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
+			Element first = eList.peek();
+			if(eList!=null)
 			for(Element e: eList){
 				i++;
 				if(e!=first){
@@ -79,8 +82,8 @@ public class CRAMain {
 		// Print
 		int k = 0;
 		LinkedList<Element> test = new LinkedList<Element>();
-		for(LinkedList<Element> eList: nounPhrases.values()){
-			test.add(eList.getFirst());
+		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
+			test.add(eList.peek());
 		}
 		test.sort(new Comparator<Element>(){
 			@Override

@@ -10,9 +10,9 @@ import model.Element;
 
 public class LinkFilterThread extends Thread{
 	ConcurrentLinkedQueue<String> abstractList;
-	ConcurrentHashMap<String, LinkedList<Element>> nounPhrases;
+	ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases;
 	
-	public LinkFilterThread(ConcurrentLinkedQueue<String> abstractList, ConcurrentHashMap<String, LinkedList<Element>> nounPhrases) {
+	public LinkFilterThread(ConcurrentLinkedQueue<String> abstractList, ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases) {
 		this.abstractList=abstractList;
 		this.nounPhrases=nounPhrases;
 	}
@@ -47,7 +47,7 @@ public class LinkFilterThread extends Thread{
 							if(nounPhrases.get(e.getNounPhrase())!=null){
 								nounPhrases.get(e.getNounPhrase().toLowerCase()).add(e);
 							}else{
-								LinkedList<Element>tempList = new LinkedList<Element>();
+								ConcurrentLinkedQueue<Element>tempList = new ConcurrentLinkedQueue<Element>();
 								tempList.add(e);
 								nounPhrases.put(e.getNounPhrase().toLowerCase(), tempList);
 							}
