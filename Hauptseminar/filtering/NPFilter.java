@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
-
 import opennlp.tools.cmdline.parser.ParserTool;
 import opennlp.tools.cmdline.postag.POSModelLoader;
 import opennlp.tools.parser.ParserFactory;
@@ -21,16 +20,22 @@ import opennlp.tools.util.InvalidFormatException;
 import opennlp.tools.parser.Parse;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+
+//alternative Tagging Model: Stanford POS Tagger
+
 
 public class NPFilter {
 
 	
     static Set<String> nounPhrases = new HashSet<String>();
-    static String testSentence = "the quick brown fox jumps over the lazy dog. Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper. The lazy brown fox jumps over the fence. That fence was build by your mother.";
+    static String testSentence = "Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper.";
     static ParserModel chunkingModel;
     static SentenceModel sentenceModel;
     static POSModel taggerModel;
     static TokenizerModel tokenizerModel;
+    static MaxentTagger stanfordTagger;
+    
     private static NPFilter instance = null;
 
     static double loadInTime;
@@ -82,6 +87,8 @@ public class NPFilter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+    	
+    	//StanfordNlpTagger(testSentence);
     	System.out.println("Time to actually Parse Sentence: "+(System.currentTimeMillis() - parseTime)/1000);
     }
 
@@ -165,6 +172,20 @@ public class NPFilter {
 			tokenizerModel = new TokenizerModel(new FileInputStream("en-token.bin"));
 		Tokenizer tokenizer = new TokenizerME(tokenizerModel);
 		return tokenizer.tokenize(sentence);
+	}
+	
+	public static ArrayList<String[]> StanfordNlpTagger(String sentence){
+		if(stanfordTagger == null)
+			stanfordTagger = new MaxentTagger("english-left3words-distsim.tagger");
+		wordList.clear();
+		sentence = sentence.replaceAll("[^\\p{L}\\p{Z}]","");
+		String tagged= stanfordTagger.tagString(sentence);
+		String[] words = tagged.split(" ");
+		for(String word: words){
+			String[] temp = word.split("_");
+			wordList.add(new String[]{temp[1],temp[0]});
+		}
+		return wordList;
 	}
 	
 }
