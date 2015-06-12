@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import opennlp.tools.cmdline.parser.ParserTool;
 import opennlp.tools.cmdline.postag.POSModelLoader;
 import opennlp.tools.parser.ParserFactory;
@@ -31,6 +32,7 @@ public class NPFilter {
     static SentenceModel sentenceModel;
     static POSModel taggerModel;
     static TokenizerModel tokenizerModel;
+    public static MaxentTagger stanfordTagger;
     private static NPFilter instance = null;
 
     static double loadInTime;
@@ -151,6 +153,21 @@ public class NPFilter {
 			tokenizerModel = new TokenizerModel(new FileInputStream("en-token.bin"));
 		Tokenizer tokenizer = new TokenizerME(tokenizerModel);
 		return tokenizer.tokenize(sentence);
+	}
+	
+	public ArrayList<String[]> StanfordNlpTagger(String sentence){
+		if(stanfordTagger == null){
+			stanfordTagger = new MaxentTagger("english-left3words-distsim.tagger");
+		}
+		wordList.clear();
+		sentence = sentence.replaceAll("\\u2010","-");
+		String tagged= stanfordTagger.tagString(sentence);
+		String[] words = tagged.split(" ");
+		for(String word: words){
+			String[] temp = word.split("_");
+			wordList.add(new String[]{temp[1],temp[0]});
+		}
+		return wordList;
 	}
 	
 }

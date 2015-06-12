@@ -13,11 +13,14 @@ import model.Element;
 
 import org.w3c.dom.NodeList;
 
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fileTransfer.FileReader;
 import filtering.LinkFilterThread;
 import filtering.NPFilter;
 
 public class CRAMain {
+	
+	public static int tagger = 0;
 
 	public static void main(String[] args) {
 		long totalTime = System.currentTimeMillis();
@@ -26,9 +29,17 @@ public class CRAMain {
 //		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/gamification.xml");
 		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/cloud.xml");
 		
+		switch(tagger){
+		case 0:
+			NPFilter npfilter = new NPFilter();
+			npfilter.GetTaggedWordsFromSentence("");
+			break;
+		case 1:
+			NPFilter.stanfordTagger = new MaxentTagger("english-left3words-distsim.tagger");
+			break;		
+		}
 		
-		NPFilter npfilter = new NPFilter();
-		npfilter.GetTaggedWordsFromSentence("");
+//		npfilter.GetTaggedWordsFromSentence("");
 
 		ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases = new ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>>();
 		System.out.print("Tagging and linking ... ");

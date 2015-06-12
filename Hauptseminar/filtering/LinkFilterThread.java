@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import craMain.CRAMain;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import model.Element;
 
 public class LinkFilterThread extends Thread{
@@ -21,7 +23,7 @@ public class LinkFilterThread extends Thread{
 	public void run(){
 		String abs="";
 		NPFilter npfilter = new NPFilter();
-		npfilter.GetTaggedWordsFromSentence("");
+//		npfilter.GetTaggedWordsFromSentence("");
 		ArrayList<String[]> taggedWordList = new ArrayList<String []>();
 		LinkedList<Element> lastElements = new LinkedList<Element>();
 		Element tempElement = null;
@@ -30,7 +32,15 @@ public class LinkFilterThread extends Thread{
 			abs = abstractList.poll();
 //			System.out.println(abstracts.item(i).getTextContent());
 			long tagStart = System.currentTimeMillis();
-			taggedWordList = npfilter.GetTaggedWordsFromSentence(abs);
+			switch(CRAMain.tagger){
+			case 0:
+				taggedWordList = npfilter.GetTaggedWordsFromSentence(abs);
+				break;
+			case 1:
+				taggedWordList = npfilter.StanfordNlpTagger(abs);
+				break;	
+			}
+	
 			totalTagged += (System.currentTimeMillis()-tagStart);
 			
 			for(String[] s : taggedWordList){
@@ -70,7 +80,7 @@ public class LinkFilterThread extends Thread{
 			lastElements.clear();
 			
 		}
-//		System.out.println(totalTagged);
+		System.out.println(totalTagged);
 	}
 
 }
