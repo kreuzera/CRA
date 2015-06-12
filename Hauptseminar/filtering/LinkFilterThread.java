@@ -25,10 +25,13 @@ public class LinkFilterThread extends Thread{
 		ArrayList<String[]> taggedWordList = new ArrayList<String []>();
 		LinkedList<Element> lastElements = new LinkedList<Element>();
 		Element tempElement = null;
+		long totalTagged = 0;
 		while(!abstractList.isEmpty()){
 			abs = abstractList.poll();
 //			System.out.println(abstracts.item(i).getTextContent());
+			long tagStart = System.currentTimeMillis();
 			taggedWordList = npfilter.GetTaggedWordsFromSentence(abs);
+			totalTagged += (System.currentTimeMillis()-tagStart);
 			
 			for(String[] s : taggedWordList){
 				if(s[0].equals("NN")||s[0].equals("NNS")||s[0].equals("NNP")||s[0].equals("NNPS")||s[0].equals("JJ")||s[0].equals("JJR")||s[0].equals("JJS")){					
@@ -67,6 +70,7 @@ public class LinkFilterThread extends Thread{
 			lastElements.clear();
 			
 		}
+//		System.out.println(totalTagged);
 	}
 
 }
