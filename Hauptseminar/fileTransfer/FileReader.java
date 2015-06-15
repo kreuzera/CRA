@@ -21,11 +21,10 @@ public class FileReader {
 	 * @param url file url of abstracts
 	 * @return NodeList of Abstracts
 	 */
-	public ConcurrentLinkedQueue<String> getAbstracts(String url){
+	public ConcurrentLinkedQueue<String> getAbstracts(File xmlFile){
 		long start = System.currentTimeMillis();
 		ConcurrentLinkedQueue<String> nodeList = null;
-		if(url.endsWith(".xml"))
-			nodeList = getAbstractsFromXml(url);
+		nodeList = getAbstractsFromXml(xmlFile);
 		//TODO implement other formats
 		System.out.println("XML File read in "+(System.currentTimeMillis()-start)+"ms");
 		return nodeList;
@@ -53,9 +52,8 @@ public class FileReader {
 			return abstracts;
 	}
 	
-	private ConcurrentLinkedQueue<String> getAbstractsFromXml(String folder){
+	private ConcurrentLinkedQueue<String> getAbstractsFromXml(File xmlFile){
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		File xmlFile = new File(folder);
 		Document doc = null;
 		DocumentBuilder db;
 		try {

@@ -1,4 +1,4 @@
-package model;
+package cra.model;
 
 import java.util.LinkedList;
 

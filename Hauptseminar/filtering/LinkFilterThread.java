@@ -6,17 +6,19 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import cra.model.Element;
 import craMain.CRAMain;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import model.Element;
 
 public class LinkFilterThread extends Thread{
-	ConcurrentLinkedQueue<String> abstractList;
-	ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases;
+	private ConcurrentLinkedQueue<String> abstractList;
+	private ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases;
+	private int tagger;
 	
-	public LinkFilterThread(ConcurrentLinkedQueue<String> abstractList, ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases) {
+	public LinkFilterThread(ConcurrentLinkedQueue<String> abstractList, ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases, int tagger) {
 		this.abstractList=abstractList;
 		this.nounPhrases=nounPhrases;
+		this.tagger = tagger;
 	}
 
 	@Override
@@ -32,7 +34,7 @@ public class LinkFilterThread extends Thread{
 			abs = abstractList.poll();
 //			System.out.println(abstracts.item(i).getTextContent());
 			long tagStart = System.currentTimeMillis();
-			switch(CRAMain.tagger){
+			switch(tagger){
 			case 0:
 				taggedWordList = npfilter.GetTaggedWordsFromSentence(abs);
 				break;

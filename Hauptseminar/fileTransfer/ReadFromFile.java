@@ -5,8 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import model.Element;
-import model.Graph;
+import cra.model.Element;
+import cra.model.Graph;
 
 public class ReadFromFile {
 

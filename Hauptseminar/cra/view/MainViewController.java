@@ -1,42 +1,84 @@
-package craMain;
+package cra.view;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
-
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.w3c.dom.NodeList;
-
+import cra.MainApp;
 import cra.model.Element;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import fileTransfer.FileReader;
 import filtering.LinkFilterThread;
 import filtering.NPFilter;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.SplitMenuButton;
+import javafx.stage.FileChooser;
 
-public class CRAMain {
+public class MainViewController {
 	
-	public static int tagger = 0;
-
-	public static void main(String[] args) {
-		long totalTime = System.currentTimeMillis();
-		FileReader fileReader = new FileReader();
-//		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/cra.xml");
-//		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/gamification.xml");
-//		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/cloud.xml");
-		ConcurrentLinkedQueue<String> abstracts = new ConcurrentLinkedQueue<String>();
+	@FXML
+	private Spinner numPrint;
+	
+	@FXML
+	private CheckBox printNeighbors;
+	
+	@FXML
+	private Label filePath;
+	
+	@FXML
+	private ComboBox<String> library;
+	
+	@FXML
+	private ComboBox<String> measure;
+	
+	private MainApp mainApp;
+	
+	
+	
+	public MainViewController(){
 		
-		switch(tagger){
-		case 0:
-			NPFilter npfilter = new NPFilter();
-			npfilter.GetTaggedWordsFromSentence("");
-			break;
-		case 1:
-			NPFilter.stanfordTagger = new MaxentTagger("english-left3words-distsim.tagger");
-			break;		
+	}
+	
+	@FXML
+	private void handleBrowse(){
+        FileChooser fileChooser = new FileChooser();
+
+        // Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                "XML files (*.xml)", "*.xml");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        // Show open file dialog
+        File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
+
+        if (file != null) {
+            mainApp.loadXml(file);
+            filePath.setText(file.getAbsolutePath());
+        }
+	}
+	
+	@FXML
+	private void handleAnalyse(){
+		long totalTime = System.currentTimeMillis();
+		NPFilter npfilter = new NPFilter();
+		switch(library.getSelectionModel().getSelectedIndex()){
+			case 0:
+				npfilter.GetTaggedWordsFromSentence("");
+				break;
+			case 1:
+				NPFilter.stanfordTagger = new MaxentTagger("english-left3words-distsim.tagger");
+				break;
+			default:
+				npfilter.GetTaggedWordsFromSentence("");
+				break;
 		}
 		
 //		npfilter.GetTaggedWordsFromSentence("");
@@ -44,9 +86,13 @@ public class CRAMain {
 		ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases = new ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>>();
 		System.out.print("Tagging and linking ... ");
 		long start = System.currentTimeMillis();
+		ConcurrentLinkedQueue<String> abstracts = new ConcurrentLinkedQueue<String>();
+		for(String s: mainApp.getAbstracts()){
+			abstracts.add(s);
+		}
 		LinkedList<LinkFilterThread> threadList = new LinkedList<LinkFilterThread>();
 		for(int i = 0; i<Runtime.getRuntime().availableProcessors(); i++){
-			LinkFilterThread thread = new LinkFilterThread(abstracts, nounPhrases,0);
+			LinkFilterThread thread = new LinkFilterThread(abstracts, nounPhrases, library.getSelectionModel().getSelectedIndex());
 			thread.setName(Integer.toString(i));
 			threadList.add(thread);
 			thread.start();
@@ -115,21 +161,32 @@ public class CRAMain {
 				break;
 			k++;
 		}
-		
-//		for(LinkedList<Element> eList: nounPhrases.values()){
-//			String testung = eList.getFirst().getNounPhrase()+": "+eList.getFirst().getNeighbour().size();
-//			for(Element n: eList.getFirst().getNeighbour()){
-//				testung += n.getNounPhrase()+", ";
-//			}
-//			System.out.println(testung);
-//			if(k>30)
-//				break;
-//			k++;
-//		}
-
-
 	}
 	
+	@FXML
+	private void initialize() {
+		ObservableList<String> libraryContent = FXCollections.observableArrayList(
+				"Open NLP",
+				"Stanford NLP"
+				);
+		library.setItems(libraryContent);
+		library.getSelectionModel().selectFirst();
+		ObservableList<String> measureContent = FXCollections.observableArrayList(
+				"Betweeness centrality",
+				"Degree centrality",
+				"Closness centrality"
+				);
+		measure.setItems(measureContent);
+		measure.getSelectionModel().selectFirst();
+		
+	}
 
+	public MainApp getMainApp() {
+		return mainApp;
+	}
+
+	public void setMainApp(MainApp mainApp) {
+		this.mainApp = mainApp;
+	}
 
 }
