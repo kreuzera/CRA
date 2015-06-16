@@ -46,8 +46,15 @@ public class LinkFilterThread extends Thread{
 			totalTagged += (System.currentTimeMillis()-tagStart);
 			
 			for(String[] s : taggedWordList){
-				if(s[0].equals("NN")||s[0].equals("NNS")||s[0].equals("NNP")||s[0].equals("NNPS")||s[0].equals("JJ")||s[0].equals("JJR")||s[0].equals("JJS")){					
-					lastElements.add(new Element(s[1].toLowerCase()));
+				if(s[0].equals("NN")||s[0].equals("NNS")||s[0].equals("NNP")||s[0].equals("NNPS")||s[0].equals("JJ")||s[0].equals("JJR")||s[0].equals("JJS")){
+					String noun = s[1].toLowerCase();
+					if(s[0].equals("NNS")||s[0].equals("NNPS")) {
+						if(noun.endsWith("s"))
+							noun = noun.substring(0, noun.length()-1);
+						if(noun.endsWith("es"))
+							noun = noun.substring(0, noun.length()-2);
+					}
+					lastElements.add(new Element(noun));
 				}else{
 					if(!lastElements.isEmpty()){
 						if(tempElement!=null){

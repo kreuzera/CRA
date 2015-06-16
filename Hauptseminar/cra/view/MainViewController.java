@@ -178,7 +178,15 @@ public class MainViewController {
 				);
 		measure.setItems(measureContent);
 		measure.getSelectionModel().selectFirst();
-		
+		//Load Tokenizers
+		new Thread(new Runnable() {
+            @Override
+            public void run() {
+        		NPFilter npFilter = new NPFilter();
+        		npFilter.GetTaggedWordsFromSentence("");
+        		NPFilter.stanfordTagger = new MaxentTagger("english-left3words-distsim.tagger");
+        }}).start();
+
 	}
 
 	public MainApp getMainApp() {
