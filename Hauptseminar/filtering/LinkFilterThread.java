@@ -46,6 +46,7 @@ public class LinkFilterThread extends Thread{
 			totalTagged += (System.currentTimeMillis()-tagStart);
 			
 			for(String[] s : taggedWordList){
+				//TODO Fix this
 				if(s[0].equals("NN")||s[0].equals("NNS")||s[0].equals("NNP")||s[0].equals("NNPS")||s[0].equals("JJ")||s[0].equals("JJR")||s[0].equals("JJS")){
 					String noun = s[1].toLowerCase();
 					if(s[0].equals("NNS")||s[0].equals("NNPS")) {
