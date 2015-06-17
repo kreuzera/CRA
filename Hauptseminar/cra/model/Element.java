@@ -4,10 +4,19 @@ import java.util.LinkedList;
 
 public class Element {
 
+	//Datastructure for CRA
 	private String nounPhrase;
 	private LinkedList<Element> neighbour;
 	private int degree;
 	private int index;
+	
+	//Datastructure for APSP
+	private double minDistance = Double.POSITIVE_INFINITY;
+	private Element previous;
+	private Edge[] adjacencies;
+	private Edge[] adjacenciesCopy;
+	public LinkedList<PathSet> shortestPaths = new LinkedList<PathSet>();
+	
 	
 	public Element(String nounPhrase){
 		this.nounPhrase = nounPhrase;
@@ -89,10 +98,48 @@ public class Element {
 		this.index = index;
 	}
 	
+	public Element getPrevious(){
+		return previous;
+	}
+	
+	public void setPrevious(Element e){
+		previous = e;
+	}
+	
+	public double getMinDistance() {
+		return minDistance;
+	}
+	
+	public void setMinDistance(double minDistance) {
+		this.minDistance = minDistance;
+	}
+	
+	public void setAdjacencies(Edge[] adjacencies) {
+		this.adjacencies = adjacencies;
+	}
+	
+	public Edge[] getAdjacencies() {
+		return adjacencies;
+	}
+	
+	public void copyAdja(){
+		adjacenciesCopy = adjacencies;
+	}
+	
+	public void resetAdja(){
+		adjacencies = adjacenciesCopy;
+	}
+	
 	@Override
 	public boolean equals(Object o){
 		if(o!=null && o instanceof Element && ((Element)o).getNounPhrase().equals(this.nounPhrase))
 			return true;
 		return false;
 	}
+
+	
+	public int compareTo(Element other)
+    {
+        return Double.compare(minDistance, other.minDistance);
+    }
 }
