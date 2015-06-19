@@ -8,7 +8,6 @@ import java.util.Collections;
 
 import sun.security.provider.certpath.AdjacencyList;
 import cra.model.Element;
-import cra.model.Edge;
 import cra.model.PathSet;
 
 public class Algorithmus

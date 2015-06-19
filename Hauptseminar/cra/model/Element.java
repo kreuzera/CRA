@@ -13,8 +13,6 @@ public class Element {
 	//Datastructure for APSP
 	private double minDistance = Double.POSITIVE_INFINITY;
 	private Element previous;
-	private Edge[] adjacencies;
-	private Edge[] adjacenciesCopy;
 	public LinkedList<PathSet> shortestPaths = new LinkedList<PathSet>();
 	
 	
@@ -112,22 +110,6 @@ public class Element {
 	
 	public void setMinDistance(double minDistance) {
 		this.minDistance = minDistance;
-	}
-	
-	public void setAdjacencies(Edge[] adjacencies) {
-		this.adjacencies = adjacencies;
-	}
-	
-	public Edge[] getAdjacencies() {
-		return adjacencies;
-	}
-	
-	public void copyAdja(){
-		adjacenciesCopy = adjacencies;
-	}
-	
-	public void resetAdja(){
-		adjacencies = adjacenciesCopy;
 	}
 	
 	@Override
