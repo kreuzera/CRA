@@ -22,10 +22,10 @@ public class Algorithmus
 		    Element u = vertexQueue.poll();
 	
 	        // Visit each edge exiting u
-	        for (Edge e : u.getAdjacencies())
+	        for (Element e : u.getNeighbour())
 	        {
-	        	Element v = e.target;
-	        	double weight = e.weight;
+	        	Element v = e;
+	        	double weight = 1;
 	        	double distanceThroughU = u.getMinDistance() + weight;
 	        	if (distanceThroughU < v.getMinDistance()) {
 				    vertexQueue.remove(v);
@@ -77,7 +77,6 @@ public class Algorithmus
 	   for(int i = 0; i<vertex.length;i++){
 		   vertex[i].setPrevious(null);
 		   vertex[i].setMinDistance(Double.POSITIVE_INFINITY);
-		   vertex[i].resetAdja();
 	   }
    }
    /*
