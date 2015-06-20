@@ -1,5 +1,6 @@
 package craMain;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,9 +26,9 @@ public class CRAMain {
 		long totalTime = System.currentTimeMillis();
 		FileReader fileReader = new FileReader();
 //		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/cra.xml");
-//		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/gamification.xml");
-//		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts("testFile/cloud.xml");
-		ConcurrentLinkedQueue<String> abstracts = new ConcurrentLinkedQueue<String>();
+		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts(new File("testFile/gamification.xml"));
+//		ConcurrentLinkedQueue<String> abstracts = fileReader.getAbstracts(new File("testFile/cloud.xml"));
+//		ConcurrentLinkedQueue<String> abstracts = new ConcurrentLinkedQueue<String>();
 		
 		switch(tagger){
 		case 0:
@@ -46,7 +47,7 @@ public class CRAMain {
 		long start = System.currentTimeMillis();
 		LinkedList<LinkFilterThread> threadList = new LinkedList<LinkFilterThread>();
 		for(int i = 0; i<Runtime.getRuntime().availableProcessors(); i++){
-			LinkFilterThread thread = new LinkFilterThread(abstracts, nounPhrases,0);
+			LinkFilterThread thread = new LinkFilterThread(abstracts, nounPhrases,tagger);
 			thread.setName(Integer.toString(i));
 			threadList.add(thread);
 			thread.start();

@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Set;
 
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
@@ -22,6 +21,7 @@ import opennlp.tools.util.InvalidFormatException;
 import opennlp.tools.parser.Parse;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
+import edu.stanford.nlp.process.Morphology;
 
 public class NPFilter {
 
@@ -34,7 +34,8 @@ public class NPFilter {
     static TokenizerModel tokenizerModel;
     public static MaxentTagger stanfordTagger;
     private static NPFilter instance = null;
-
+    Morphology morph;
+    
     static double loadInTime;
     static double parseTime; 
     private ArrayList<String[]> wordList = new ArrayList<String[]>();
@@ -130,6 +131,9 @@ public class NPFilter {
 		tags = tagger.tag(words);
 			for(int i= 0; i< tags.length; i++){
 				String[] temp = {tags[i], words[i]};
+				if(temp[0].equals("NNS") || temp[0].equals("NNPS")){
+					temp[1] = lemmatize(temp[1], temp[0]);
+				}
 				wordList.add(temp);
 			}
 		return wordList;
@@ -165,9 +169,18 @@ public class NPFilter {
 		String[] words = tagged.split(" ");
 		for(String word: words){
 			String[] temp = word.split("_");
+			if(temp[1].equals("NNS") || temp[1].equals("NNPS")){
+				temp[0] = lemmatize(temp[0], temp[1]);
+			}
 			wordList.add(new String[]{temp[1],temp[0]});
 		}
 		return wordList;
+	}
+	
+	public String lemmatize (String word, String tag){
+		if(morph == null)
+			morph= new Morphology();
+		return morph.lemma(word, tag);
 	}
 	
 }
