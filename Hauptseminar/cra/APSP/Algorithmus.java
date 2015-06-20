@@ -38,19 +38,28 @@ public class Algorithmus
 	        		LinkedList<Element>tempPath = new LinkedList<Element>();
 	        		Element temp = v;
 	        		
-	        		while(temp!=null && elementInList(temp, tempPath)){
+	        		boolean circle = false;
+	        		
+	        		while(temp!=null)
+	        			if(elementInList(temp, tempPath)){
+	        				circle = true;
+	        				break;
+	        			}
+	        			else{
 	        			tempPath.add(temp);
 	        			temp = temp.getPrevious();
 	        		}
 	        		
-	        		Collections.reverse(tempPath);
-	        		
-	        		source.shortestPaths.add(new PathSet(source, v, tempPath));
-	        		
-	        		vertexQueue.remove(v);
-				    v.setMinDistance(distanceThroughU);
-				    v.setPrevious(u);
-				    vertexQueue.add(v);
+	        		if(!circle){
+		        		Collections.reverse(tempPath);
+		        		
+		        		source.shortestPaths.add(new PathSet(source, v, tempPath));
+		        		
+		        		vertexQueue.remove(v);
+					    v.setMinDistance(distanceThroughU);
+					    v.setPrevious(u);
+					    vertexQueue.add(v);
+	        		}
 	        	}
 	          }
         }
