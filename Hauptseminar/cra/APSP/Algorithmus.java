@@ -38,7 +38,7 @@ public class Algorithmus
 	        		LinkedList<Element>tempPath = new LinkedList<Element>();
 	        		Element temp = v;
 	        		
-	        		while(temp!=null){
+	        		while(temp!=null && elementInList(temp, tempPath)){
 	        			tempPath.add(temp);
 	        			temp = temp.getPrevious();
 	        		}
@@ -56,6 +56,14 @@ public class Algorithmus
         }
     }
 
+    
+    private boolean elementInList(Element e, LinkedList<Element> list){
+    	for(int i = 0; i<list.size();i++){
+    		if(list.get(i)== e)
+    			return true;
+    	}
+    	return false;
+    }
     public List<Element> getShortestPathTo(Element target, Element source)
     {
         List<Element> path = new ArrayList<Element>();
