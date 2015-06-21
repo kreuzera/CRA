@@ -91,7 +91,7 @@ public class LinkFilterThread extends Thread{
 			lastElements.clear();
 			
 		}
-		System.out.println(totalTagged);
+//		System.out.println(totalTagged);
 	}
 
 }
