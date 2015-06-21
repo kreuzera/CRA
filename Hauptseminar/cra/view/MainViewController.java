@@ -5,9 +5,12 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 import cra.MainApp;
+import cra.APSP.Algorithmus;
 import cra.model.Element;
+import cra.model.PathSet;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import filtering.LinkFilterThread;
 import filtering.NPFilter;
@@ -40,6 +43,9 @@ public class MainViewController {
 	private ComboBox<String> measure;
 	
 	private MainApp mainApp;
+	
+	private static int counter = 0;
+	private static boolean algoFinished = false;
 	
 	
 	
@@ -129,39 +135,112 @@ public class MainViewController {
 		}
 		System.out.println(" finished in "+(System.currentTimeMillis()-start)+"ms. "+i+" nouns merged into "+nounPhrases.size()+" nouns. ");
 		System.out.println("Total time: "+(System.currentTimeMillis()-totalTime)+"ms. Printing in 5 Seconds");
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		// Print
-		int k = 0;
-		LinkedList<Element> test = new LinkedList<Element>();
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		algoFinished = false;
+		long algoDuration = System.currentTimeMillis();
+		counter = 0;
+		new Thread(new Runnable() {
+            @Override
+            public void run() {
+        		try {
+        			while(!algoFinished){
+        				Thread.sleep(1000);
+        				System.out.println(counter+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
+        			}		
+        		} catch (InterruptedException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}
+        }}).start();
+		Algorithmus algo = new Algorithmus();
 		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
-			test.add(eList.peek());
+			algo.computePaths(eList.peek());
+			counter++;
 		}
-		test.sort(new Comparator<Element>(){
-			@Override
-			public int compare(Element o1, Element o2) {
-				if(o1.getNeighbour().size()>o2.getNeighbour().size())
-					return -1;
-				if(o1.getNeighbour().size()<o2.getNeighbour().size())
-					return 1;
-				return 0;
+		algoFinished = true;
+		int k = 0;
+		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
+			for(PathSet p: eList.peek().shortestPaths){
+				System.out.print(p.getSource().getNounPhrase()+"=>"+p.getTarget().getNounPhrase()+": ");
+				for(Element e: p.getPath()){
+					System.out.print(e.getNounPhrase()+", ");
+				}
+				System.out.println("");
+				k++;
+				if(k>50)
+					break;
 			}
-			
-		});
-		
-		for(Element e: test){
-			String testung = e.getNounPhrase()+": "+e.getNeighbour().size();
-			System.out.println(testung);
-			if(k>30)
-				break;
 			k++;
+			if(k>0)
+				break;
 		}
+	
+		
+//		// Print
+//		int k = 0;
+//		LinkedList<Element> test = new LinkedList<Element>();
+//		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
+//			test.add(eList.peek());
+//		}
+//		test.sort(new Comparator<Element>(){
+//			@Override
+//			public int compare(Element o1, Element o2) {
+//				if(o1.getNeighbour().size()>o2.getNeighbour().size())
+//					return -1;
+//				if(o1.getNeighbour().size()<o2.getNeighbour().size())
+//					return 1;
+//				return 0;
+//			}
+//			
+//		});
+//		
+//		for(Element e: test){
+//			String testung = e.getNounPhrase()+": "+e.getNeighbour().size();
+//			System.out.println(testung);
+//			if(k>30)
+//				break;
+//			k++;
+//		}
 	}
+	
+	   /**
+     * Convert a millisecond duration to a string format
+     * 
+     * @param millis A duration to convert to a string form
+     * @return A string of the form "X Days Y Hours Z Minutes A Seconds".
+     */
+    public static String getDurationBreakdown(long millis)
+    {
+        if(millis < 0)
+        {
+            throw new IllegalArgumentException("Duration must be greater than zero!");
+        }
+
+        long days = TimeUnit.MILLISECONDS.toDays(millis);
+        millis -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        millis -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        millis -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+
+        StringBuilder sb = new StringBuilder(64);
+        sb.append(days);
+        sb.append("d ");
+        sb.append(hours);
+        sb.append("h ");
+        sb.append(minutes);
+        sb.append("m ");
+        sb.append(seconds);
+        sb.append("s ");
+
+        return(sb.toString());
+    }
 	
 	@FXML
 	private void initialize() {

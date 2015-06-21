@@ -2,7 +2,7 @@ package cra.model;
 
 import java.util.LinkedList;
 
-public class Element {
+public class Element implements Comparable{
 
 	//Datastructure for CRA
 	private String nounPhrase;
@@ -124,4 +124,11 @@ public class Element {
     {
         return Double.compare(minDistance, other.minDistance);
     }
+
+	@Override
+	public int compareTo(Object o) {
+		if(o instanceof Element)
+			return compareTo((Element)o);
+		return 0;
+	}
 }

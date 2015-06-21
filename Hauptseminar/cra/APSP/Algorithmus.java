@@ -17,6 +17,7 @@ public class Algorithmus
         source.setMinDistance(0);
         PriorityQueue<Element> vertexQueue = new PriorityQueue<Element>();
       	vertexQueue.add(source);
+      	long algoStart = System.currentTimeMillis();
       	while (!vertexQueue.isEmpty()) {
 		    Element u = vertexQueue.poll();
 	
@@ -63,6 +64,14 @@ public class Algorithmus
 	        	}
 	          }
         }
+//      	System.out.println("Algo duration for word "+source.getNounPhrase()+" is "+(System.currentTimeMillis()-algoStart));
+//      	for(PathSet p: source.shortestPaths){
+//      		System.out.print(p.getTarget().getNounPhrase()+"=> ");
+//      		for(Element e: p.getPath()){
+//      			System.out.print(e.getNounPhrase()+", ");
+//      		}
+//      		System.out.println("");
+//      	}
     }
 
     
