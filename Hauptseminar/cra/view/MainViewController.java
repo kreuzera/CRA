@@ -149,8 +149,8 @@ public class MainViewController {
             public void run() {
         		try {
         			while(!algoFinished){
-        				Thread.sleep(1000);
         				System.out.println(counter+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
+        				Thread.sleep(1000);        				
         			}		
         		} catch (InterruptedException e) {
         			// TODO Auto-generated catch block
@@ -162,6 +162,7 @@ public class MainViewController {
 			algo.computePaths(eList.peek());
 			counter++;
 		}
+		System.out.println("Total: "+counter);
 		algoFinished = true;
 		int k = 0;
 		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
