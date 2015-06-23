@@ -28,13 +28,14 @@ public class Algorithmus
 	        	double weight = 1;
 	        	double distanceThroughU = u.getMinDistance() + weight;
 	        	if (distanceThroughU < v.getMinDistance()) {
-				    vertexQueue.remove(v);
+				    removeOlderShortestPath(source, v);
+	        		vertexQueue.remove(v);
 				    v.setMinDistance(distanceThroughU);
 				    v.setPrevious(u);
 				    vertexQueue.add(v);
 	        	}
 	        	
-	        	if(distanceThroughU == v.getMinDistance() && v.getMinDistance()>1){
+	        	if(distanceThroughU == v.getMinDistance() && v.getMinDistance()>0){
 	        
 	        		LinkedList<Element>tempPath = new LinkedList<Element>();
 	        		Element temp = v;
@@ -74,6 +75,16 @@ public class Algorithmus
 //      	}
     }
 
+    
+    public void removeOlderShortestPath(Element source, Element target){
+    	LinkedList<PathSet> list = source.shortestPaths;
+    	
+    	for(PathSet p : list){
+    		if(p.getSource() == source && p.getTarget() == target){
+    			source.shortestPaths.remove(p);
+    		}
+    	}
+    }
     
     private boolean elementInList(Element e, LinkedList<Element> list){
     	for(int i = 0; i<list.size();i++){
