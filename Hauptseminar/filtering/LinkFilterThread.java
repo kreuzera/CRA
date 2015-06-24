@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import cra.model.Element;
-import craMain.CRAMain;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 public class LinkFilterThread extends Thread{

@@ -2,6 +2,7 @@ package cra.view;
 
 import java.io.File;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -9,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 import cra.MainApp;
 import cra.APSP.Algorithmus;
+import cra.APSP.Dijkstra;
+import cra.APSP.DijkstraRec;
 import cra.model.Element;
 import cra.model.PathSet;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
@@ -119,20 +122,25 @@ public class MainViewController {
 		// Merge
 		System.out.print("Merging ...");
 		start = System.currentTimeMillis();
+		LinkedList<Element> mergeList = new LinkedList<Element>();
 		int i = 0;
 		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
-			Element first = eList.peek();
+			Element mergeTarget = new Element(eList.peek().getNounPhrase()); 
+			mergeTarget.setIndex(1);
 			if(eList!=null)
 			for(Element e: eList){
 				i++;
-				if(e!=first){
-					for(Element n: e.getNeighbour()){
-						if(!first.getNeighbour().contains(n))
-							first.addNeighbour(n);
-					}					
+				for(Element n: e.getNeighbour()){
+
+					if(!mergeTarget.getNeighbour().contains(n))
+						mergeTarget.addNeighbour(n);
+						n.getNeighbour().remove(e);
+						n.addNeighbour(mergeTarget);
 				}					
 			}
+			mergeList.add(mergeTarget);
 		}
+
 		System.out.println(" finished in "+(System.currentTimeMillis()-start)+"ms. "+i+" nouns merged into "+nounPhrases.size()+" nouns. ");
 		System.out.println("Total time: "+(System.currentTimeMillis()-totalTime)+"ms. Printing in 5 Seconds");
 //		try {
@@ -141,72 +149,119 @@ public class MainViewController {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		algoFinished = false;
-		long algoDuration = System.currentTimeMillis();
-		counter = 0;
-		new Thread(new Runnable() {
-            @Override
-            public void run() {
-        		try {
-        			while(!algoFinished){
-        				System.out.println(counter+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
-        				Thread.sleep(1000);        				
-        			}		
-        		} catch (InterruptedException e) {
-        			// TODO Auto-generated catch block
-        			e.printStackTrace();
-        		}
-        }}).start();
-		Algorithmus algo = new Algorithmus();
-		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
-			algo.computePaths(eList.peek());
-			counter++;
-		}
-		System.out.println("Total: "+counter);
-		algoFinished = true;
-		int k = 0;
-		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
-			for(PathSet p: eList.peek().shortestPaths){
-				System.out.print(p.getSource().getNounPhrase()+"=>"+p.getTarget().getNounPhrase()+": ");
-				for(Element e: p.getPath()){
-					System.out.print(e.getNounPhrase()+", ");
+		switch(measure.getSelectionModel().getSelectedIndex()){
+			case 0:
+				algoFinished = false;
+				long algoDuration = System.currentTimeMillis();
+				counter = 0;
+				new Thread(new Runnable() {
+		            @Override
+		            public void run() {
+		        		try {
+		        			while(!algoFinished){
+		        				System.out.println(counter+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
+		        				Thread.sleep(1000);        				
+		        			}		
+		        		} catch (InterruptedException e) {
+		        			// TODO Auto-generated catch block
+		        			e.printStackTrace();
+		        		}
+		        }}).start();
+				Algorithmus algo = new Algorithmus();
+				for(Element e: mergeList){
+					algo.computePaths(e);
+					counter++;
 				}
-				System.out.println("");
-				k++;
-				if(k>50)
-					break;
-			}
-			k++;
-			if(k>0)
-				break;
-		}
+				System.out.println("Total: "+counter);
+				algoFinished = true;
 	
+				int k = 0;
+				for(Element e: mergeList){
+					for(PathSet p: e.shortestPaths){
+						System.out.print(p.getSource().getNounPhrase()+"=>"+p.getTarget().getNounPhrase()+": ");
+						for(Element g: p.getPath()){
+							System.out.print(g.getNounPhrase()+", ");
+						}
+						System.out.println("");
+						k++;
+						if(k>100)
+							break;
+					}
+					if(k>100)
+						break;
+				}
+				break;
+			case 1:
+				k = 0;
+				mergeList.sort(new Comparator<Element>(){
+					@Override
+					public int compare(Element o1, Element o2) {
+						if(o1.getNeighbour().size()>o2.getNeighbour().size())
+							return -1;
+						if(o1.getNeighbour().size()<o2.getNeighbour().size())
+							return 1;
+						return 0;
+					}
+					
+				});
+				
+				for(Element e: mergeList){
+					String testung = e.getNounPhrase()+": "+e.getNeighbour().size();
+					System.out.println(testung);
+					if(k>30)
+						break;
+					k++;
+				}
+				break;
+			case 2:
+				algoFinished = false;
+				algoDuration = System.currentTimeMillis();
+				counter = 0;
+				new Thread(new Runnable() {
+		            @Override
+		            public void run() {
+		        		try {
+		        			while(!algoFinished){
+		        				System.out.println(counter+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
+		        				Thread.sleep(1000);        				
+		        			}		
+		        		} catch (InterruptedException e) {
+		        			// TODO Auto-generated catch block
+		        			e.printStackTrace();
+		        		}
+		        }}).start();
+				DijkstraRec dijkstra = null;
+				for(Element e: mergeList){
+					dijkstra = new DijkstraRec();
+					dijkstra.computePaths(e);
+					counter++;
+				}
+				System.out.println("Total: "+counter);
+				algoFinished = true;
+	
+				 k = 0;
+				for(Element e: mergeList){
+					for(PathSet p: e.shortestPaths){
+						System.out.print(p.getSource().getNounPhrase()+"=>"+p.getTarget().getNounPhrase()+": ");
+						for(Element g: p.getPath()){
+							System.out.print(g.getNounPhrase()+", ");
+						}
+						System.out.println("");
+						k++;
+						if(k>100)
+							break;
+					}
+					if(k>100)
+						break;
+				}
+				break;
+			default:
+				break;
+	}
 		
-//		// Print
-//		int k = 0;
-//		LinkedList<Element> test = new LinkedList<Element>();
-//		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
-//			test.add(eList.peek());
-//		}
-//		test.sort(new Comparator<Element>(){
-//			@Override
-//			public int compare(Element o1, Element o2) {
-//				if(o1.getNeighbour().size()>o2.getNeighbour().size())
-//					return -1;
-//				if(o1.getNeighbour().size()<o2.getNeighbour().size())
-//					return 1;
-//				return 0;
-//			}
-//			
-//		});
-//		
-//		for(Element e: test){
-//			String testung = e.getNounPhrase()+": "+e.getNeighbour().size();
-//			System.out.println(testung);
-//			if(k>30)
-//				break;
-//			k++;
-//		}
+	
+
+
 	}
 	
 	   /**
