@@ -9,6 +9,8 @@ public class Element implements Comparable{
 	private LinkedList<Element> neighbour;
 	private int degree;
 	private int index;
+	private float influence = 0;
+	private int id = 0;
 	
 	//Datastructure for APSP
 	private double minDistance = Double.POSITIVE_INFINITY;
@@ -130,5 +132,21 @@ public class Element implements Comparable{
 		if(o instanceof Element)
 			return compareTo((Element)o);
 		return 0;
+	}
+
+	public float getInfluence() {
+		return influence;
+	}
+
+	public void setInfluence(float influence) {
+		this.influence = influence;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

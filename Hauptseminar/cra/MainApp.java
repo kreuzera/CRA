@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import cra.view.MainViewController;
-import fileTransfer.FileReader;
+import fileTransfer.Reader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -22,7 +22,7 @@ public class MainApp extends Application {
 	@Override
 	public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("AddressApp");
+        this.primaryStage.setTitle("CRA");
         
         // Set the application icon.
 //        this.primaryStage.getIcons().add(new Image("file:resources/images/Address_Book.png"));
@@ -63,7 +63,7 @@ public class MainApp extends Application {
     }
     
     public void loadXml(File xmlFile){
-		FileReader fileReader = new FileReader();
+		Reader fileReader = new Reader();
     	setAbstracts(fileReader.getAbstracts(xmlFile));
     }
     

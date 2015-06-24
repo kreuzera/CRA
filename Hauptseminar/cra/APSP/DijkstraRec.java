@@ -5,12 +5,56 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import cra.model.Element;
 import cra.model.PathSet;
+import cra.view.MainViewController;
 
-public class DijkstraRec {
+public class DijkstraRec extends Thread{
 	private HashMap<Element, LinkedList<Element>> parentList;
+	private ConcurrentLinkedQueue<Element> listOfNodes;
+	private MainViewController controller;
+	
+	public DijkstraRec(ConcurrentLinkedQueue<Element> listOfNodes, MainViewController controller){
+		this.listOfNodes = listOfNodes;
+		this.controller = controller;
+	}
+	
+	@Override
+	public void run(){
+		while(!listOfNodes.isEmpty()){
+			Element e = listOfNodes.poll();
+			computePaths(e);
+			HashMap<Element, Integer> overList = new HashMap<Element, Integer>();
+			int totalPaths = 0;
+			Element last = null;
+			if(!e.shortestPaths.isEmpty())
+				 last = e.shortestPaths.getFirst().getTarget();
+			for(PathSet path: e.shortestPaths){						
+				totalPaths++;
+				for(Element pElement: path.getPath()){
+					if(overList.get(pElement)==null)
+						overList.put(pElement, 0);
+					Integer tempInt = overList.get(pElement);
+					tempInt++;
+					overList.put(pElement, tempInt);
+				}
+				
+				if(path.getTarget()!=last){
+					for(Element in: overList.keySet()){
+						float influence = in.getInfluence()+(overList.get(in)/totalPaths);
+						in.setInfluence(influence);
+					}
+					totalPaths = 0;
+					overList.clear();
+				}
+				last = path.getTarget();
+			}
+			e.shortestPaths.clear();
+			controller.counter++;
+		}
+	}
 	
 	public void computePaths(Element start){
 		parentList = new HashMap<Element, LinkedList<Element>>();
@@ -61,17 +105,13 @@ public class DijkstraRec {
 			}
 		}
 		distance.clear();
-		System.out.println(start.getNounPhrase());
 		for(Element e: visited){
-//			numparents = 0;
-			if(e!=start)
+			if(e!=start && start.getId()<e.getId())
 				fillPaths(e, new LinkedList<Element>());
-//			System.out.println(numparents);
 		}		
 		
 	}
 	
-	private int numparents = 0;
 	
 	private void fillPaths(Element element, LinkedList<Element> currentPath){
 		currentPath.addFirst(element);
@@ -86,7 +126,6 @@ public class DijkstraRec {
 			}
 			else{
 				for(Element parent: parentList.get(element)){
-//					numparents++;
 					fillPaths(parent, copyList(currentPath));
 				}
 			}

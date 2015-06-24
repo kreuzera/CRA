@@ -2,6 +2,7 @@ package cra.view;
 
 import java.io.File;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +46,7 @@ public class MainViewController {
 	
 	private MainApp mainApp;
 	
-	private static int counter = 0;
+	public static int counter = 0;
 	private static boolean algoFinished = false;
 	
 	
@@ -62,6 +63,11 @@ public class MainViewController {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
                 "XML files (*.xml)", "*.xml");
         fileChooser.getExtensionFilters().add(extFilter);
+        
+        //TODO TO IMPLEMENT OR NOT TO IMPLEMENT
+//        FileChooser.ExtensionFilter txtFilter = new FileChooser.ExtensionFilter(
+//                "TXT files (*.txt)", "*.txt");        
+//        fileChooser.getExtensionFilters().add(txtFilter);
 
         // Show open file dialog
         File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
@@ -75,28 +81,19 @@ public class MainViewController {
 	@FXML
 	private void handleAnalyse(){
 		long totalTime = System.currentTimeMillis();
-		NPFilter npfilter = new NPFilter();
-		switch(library.getSelectionModel().getSelectedIndex()){
-			case 0:
-				npfilter.GetTaggedWordsFromSentence("");
-				break;
-			case 1:
-				NPFilter.stanfordTagger = new MaxentTagger("english-left3words-distsim.tagger");
-				break;
-			default:
-				npfilter.GetTaggedWordsFromSentence("");
-				break;
-		}
+		//TODO REMOVE THIS BEFORE SUBMISSION
+//		NPFilter test = new NPFilter();
+//		test.test("Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper,");
 		
-//		npfilter.GetTaggedWordsFromSentence("");
 
 		ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases = new ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>>();
 		System.out.print("Tagging and linking ... ");
 		long start = System.currentTimeMillis();
 		ConcurrentLinkedQueue<String> abstracts = new ConcurrentLinkedQueue<String>();
-		for(String s: mainApp.getAbstracts()){
-			abstracts.add(s);
-		}
+		abstracts = mainApp.getAbstracts();
+		
+		
+		
 		LinkedList<LinkFilterThread> threadList = new LinkedList<LinkFilterThread>();
 		for(int i = 0; i<Runtime.getRuntime().availableProcessors(); i++){
 			LinkFilterThread thread = new LinkFilterThread(abstracts, nounPhrases, library.getSelectionModel().getSelectedIndex());
@@ -108,7 +105,6 @@ public class MainViewController {
 		for(LinkFilterThread t: threadList){
 			try {
 				t.join();
-//				System.out.println(t.getName()+" is alive? "+t.isAlive());
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -122,9 +118,11 @@ public class MainViewController {
 		start = System.currentTimeMillis();
 		LinkedList<Element> mergeList = new LinkedList<Element>();
 		int i = 0;
+		int id = 0;
 		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
-			Element mergeTarget = new Element(eList.peek().getNounPhrase()); 
-			mergeTarget.setIndex(1);
+			Element mergeTarget = new Element(eList.peek().getNounPhrase());
+			mergeTarget.setId(id);;
+			id++;
 			if(eList!=null)
 			for(Element e: eList){
 				i++;
@@ -228,30 +226,82 @@ public class MainViewController {
 		        			e.printStackTrace();
 		        		}
 		        }}).start();
-				DijkstraRec dijkstra = null;
+				ConcurrentLinkedQueue<Element> eList = new ConcurrentLinkedQueue<Element>();
 				for(Element e: mergeList){
-					dijkstra = new DijkstraRec();
-					dijkstra.computePaths(e);
-					counter++;
+					eList.add(e);
 				}
-				System.out.println("Total: "+counter);
-				algoFinished = true;
-	
-				 k = 0;
-				for(Element e: mergeList){
-					for(PathSet p: e.shortestPaths){
-						System.out.print(p.getSource().getNounPhrase()+"=>"+p.getTarget().getNounPhrase()+": ");
-						for(Element g: p.getPath()){
-							System.out.print(g.getNounPhrase()+", ");
-						}
-						System.out.println("");
-						k++;
-						if(k>100)
-							break;
+				LinkedList<DijkstraRec> dijkstraRec = new LinkedList<DijkstraRec>();
+				for(int l = 0; l<Runtime.getRuntime().availableProcessors(); l++){
+					DijkstraRec thread = new DijkstraRec(eList, this);
+					thread.setName(Integer.toString(l));
+					dijkstraRec.add(thread);
+					thread.start();
+				}
+				System.out.print("Thread count: "+threadList.size()+" ... ");
+				for(DijkstraRec t: dijkstraRec){
+					try {
+						t.join();
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
-					if(k>100)
+				}
+//				DijkstraRec dijkstra = null;
+//				for(Element e: mergeList){
+//					dijkstra = new DijkstraRec();
+//					dijkstra.computePaths(e);
+//					HashMap<Element, Integer> overList = new HashMap<Element, Integer>();
+//					int totalPaths = 0;
+//					Element last = null;
+//					if(!e.shortestPaths.isEmpty())
+//						 last = e.shortestPaths.getFirst().getTarget();
+//					for(PathSet path: e.shortestPaths){						
+//						totalPaths++;
+//						if(overList.get(path.getTarget())==null)
+//							overList.put(path.getTarget(), 0);
+//						Integer tempInt = overList.get(path.getTarget());
+//						tempInt++;
+//						overList.put(path.getTarget(), tempInt);
+//						if(path.getTarget()!=last){
+//							for(Element in: overList.keySet()){
+//								float influence = in.getInfluence()+(overList.get(in)/totalPaths);
+//								in.setInfluence(influence);
+//							}
+//							totalPaths = 0;
+//							overList.clear();
+//						}
+//						last = path.getTarget();
+//					}
+//					e.shortestPaths.clear();
+//					counter++;
+//				}
+				for(Element e: mergeList){
+					float influence = e.getInfluence()/((mergeList.size()-1)*(mergeList.size()-2)/2);
+					e.setInfluence(influence);					
+				}
+				mergeList.sort(new Comparator<Element>(){
+
+					@Override
+					public int compare(Element arg0, Element arg1) {
+						if(arg0.getInfluence()>arg1.getInfluence())
+							return -1;
+						if(arg0.getInfluence()<arg1.getInfluence())
+							return 1;
+						return 0;
+					}
+					
+				});
+				k = 0;
+				for(Element e: mergeList){
+					System.out.println(e.getNounPhrase()+": "+e.getInfluence());
+					k++;
+					if(k>50)
 						break;
 				}
+				
+				System.out.println("Total: "+counter);
+				algoFinished = true;
+				
 				break;
 			default:
 				break;
@@ -307,7 +357,7 @@ public class MainViewController {
 		ObservableList<String> measureContent = FXCollections.observableArrayList(
 				"Betweeness centrality",
 				"Degree centrality",
-				"Closness centrality"
+				"Betweeness centrality (alternative)"
 				);
 		measure.setItems(measureContent);
 		measure.getSelectionModel().selectFirst();

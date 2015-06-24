@@ -73,6 +73,20 @@ public class NPFilter {
 		return wordList;
 
 	}
+	
+	public void test(String sentence) {
+		try {
+			String[] sentences = SentenceTokenizer(sentence);
+			for(String s: sentences)
+				Parse(s);
+			for(String s: nounPhrases)
+				System.out.println(s);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
 	/**
 	 * 
