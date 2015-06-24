@@ -60,17 +60,25 @@ public class DijkstraRec {
 				}
 			}
 		}
+		distance.clear();
+		System.out.println(start.getNounPhrase());
 		for(Element e: visited){
+			numparents = 0;
 			if(e!=start)
 				fillPaths(e, new LinkedList<Element>());
+			System.out.println(numparents);
 		}		
 		
 	}
 	
+	private int numparents = 0;
+	
 	private void fillPaths(Element element, LinkedList<Element> currentPath){
 		currentPath.addFirst(element);
+		
 		if(parentList.get(element).size() == 0){
-			PathSet path = new PathSet(element, currentPath.getLast(), currentPath);
+			PathSet path = new PathSet(element, currentPath.getLast(), copyList(currentPath));
+			currentPath = null;
 			element.shortestPaths.add(path);
 		}else{
 			if(parentList.get(element).size()==1){
@@ -78,11 +86,12 @@ public class DijkstraRec {
 			}
 			else{
 				for(Element parent: parentList.get(element)){
-					currentPath = copyList(currentPath);
-					fillPaths(parent, currentPath);
+					numparents++;
+					fillPaths(parent, copyList(currentPath));
 				}
 			}
 		}
+		currentPath=null;
 		
 	}
 	public static long copyTime = 0;

@@ -30,8 +30,6 @@ import javafx.stage.FileChooser;
 
 public class MainViewController {
 	
-	@FXML
-	private Spinner numPrint;
 	
 	@FXML
 	private CheckBox printNeighbors;
