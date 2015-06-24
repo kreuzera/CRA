@@ -63,10 +63,10 @@ public class DijkstraRec {
 		distance.clear();
 		System.out.println(start.getNounPhrase());
 		for(Element e: visited){
-			numparents = 0;
+//			numparents = 0;
 			if(e!=start)
 				fillPaths(e, new LinkedList<Element>());
-			System.out.println(numparents);
+//			System.out.println(numparents);
 		}		
 		
 	}
@@ -86,7 +86,7 @@ public class DijkstraRec {
 			}
 			else{
 				for(Element parent: parentList.get(element)){
-					numparents++;
+//					numparents++;
 					fillPaths(parent, copyList(currentPath));
 				}
 			}
