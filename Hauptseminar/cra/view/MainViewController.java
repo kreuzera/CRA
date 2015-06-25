@@ -312,7 +312,7 @@ public class MainViewController {
 		//					}
 		//				}
 						for(Element e: mergeList){
-							float influence = e.getInfluence()/((mergeList.size()-1)*(mergeList.size()-2)/2);
+							float influence = e.getInfluence()/((float)(mergeList.size()-1)*(mergeList.size()-2)/2);
 							e.setInfluence(influence);					
 						}
 						mergeList.sort(new Comparator<Element>(){

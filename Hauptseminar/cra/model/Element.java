@@ -9,7 +9,7 @@ public class Element implements Comparable{
 	private LinkedList<Element> neighbour;
 	private int degree;
 	private int index;
-	private float influence = 0;
+	private float influence = 0f;
 	private int id = 0;
 	
 	//Datastructure for APSP
