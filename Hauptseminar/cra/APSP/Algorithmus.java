@@ -109,10 +109,10 @@ public class Algorithmus
         return path;
     }
 
-   public void resetPrevious(Element[] vertex){
-	   for(int i = 0; i<vertex.length;i++){
-		   vertex[i].setPrevious(null);
-		   vertex[i].setMinDistance(Double.POSITIVE_INFINITY);
+   public void resetPrevious(LinkedList<Element> vertex){
+	   for(int i = 0; i<vertex.size();i++){
+		   vertex.get(i).setPrevious(null);
+		   vertex.get(i).setMinDistance(Double.POSITIVE_INFINITY);
 	   }
    }
    /*
