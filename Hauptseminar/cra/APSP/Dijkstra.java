@@ -43,8 +43,7 @@ public class Dijkstra extends Thread{
 				
 				if(path.getTarget()!=last){
 					for(Element in: overList.keySet()){
-						float influence = in.getInfluence()+(overList.get(in)/totalPaths);
-						in.setInfluence(influence);
+						in.setInfluence(in.getInfluence()+(overList.get(in)/totalPaths));
 					}
 					totalPaths = 0;
 					overList.clear();
