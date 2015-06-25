@@ -61,7 +61,7 @@ public class LinkFilterThread extends Thread {
 								&& !(lastTag.equals("NN") || lastTag.equals("NNS")
 								|| lastTag.equals("NNP") || lastTag.equals("NNPS")))) {
 					String noun = s[1].toLowerCase();
-//					controller.setStatus("Searching and linking nouns: "+Integer.toString(nounPhrases.size()));
+					controller.setStatus("Searching and linking nouns: "+Integer.toString(nounPhrases.size()));
 					lastElements.add(new Element(noun));
 				} else {
 					if (!lastElements.isEmpty()) {

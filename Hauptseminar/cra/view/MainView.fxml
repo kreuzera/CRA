@@ -11,7 +11,7 @@
       <Label fx:id="filePath" layoutX="10.0" layoutY="14.0" text="Please select file..." AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="14.0" />
       <Button layoutX="518.0" layoutY="6.0" mnemonicParsing="false" onAction="#handleBrowse" text="Browse..." AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
       <Separator layoutX="74.0" layoutY="44.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="45.0" />
-      <Button defaultButton="true" layoutX="392.0" layoutY="163.0" mnemonicParsing="false" onAction="#handleAnalyse" prefHeight="25.0" prefWidth="62.0" text="Analyse" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="163.0" />
+      <Button fx:id="analyseButton" defaultButton="true" layoutX="392.0" layoutY="163.0" mnemonicParsing="false" onAction="#handleAnalyse" prefHeight="25.0" prefWidth="62.0" text="Analyse" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="163.0" />
       <Label layoutX="9.0" layoutY="96.0" text="Measure" AnchorPane.leftAnchor="9.0" />
       <Label layoutX="16.0" layoutY="59.0" text="NLP Library" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="59.0" />
       <ComboBox fx:id="library" layoutX="294.0" layoutY="56.0" prefHeight="25.0" prefWidth="211.0" AnchorPane.rightAnchor="10.0" />

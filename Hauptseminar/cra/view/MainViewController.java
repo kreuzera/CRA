@@ -20,7 +20,12 @@ import filtering.NPFilter;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -33,6 +38,9 @@ public class MainViewController {
 	
 	@FXML
 	private CheckBox printNeighbors;
+	
+	@FXML
+	private Button analyseButton;
 	
 	@FXML
 	private Label filePath;
@@ -90,6 +98,7 @@ public class MainViewController {
 	
 	@FXML
 	private void handleAnalyse(){
+		analyseButton.setDisable(true);
 		MainViewController controller = this;
 		for(Thread thread: threadPList){
 			if(thread!=null && thread.isAlive()){
@@ -101,6 +110,7 @@ public class MainViewController {
 			
             @Override
             public void run() {
+            	
 				long totalTime = System.currentTimeMillis();
 				textArea.setText("");
 				//TODO REMOVE THIS BEFORE SUBMISSION
@@ -335,9 +345,11 @@ public class MainViewController {
 				}
 				textArea.setText(print);
 				setStatus("done");
+				analyseButton.setDisable(false);
             }});
 		thread.start();
 		threadPList.add(thread);
+		
 	}
 	
 	@FXML
@@ -410,6 +422,24 @@ public class MainViewController {
 		
 		IntegerSpinnerValueFactory factory = new IntegerSpinnerValueFactory(1,Integer.MAX_VALUE,50,1);
 		printQuantity.setValueFactory(factory);
+		
+		analyseButton.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override public void handle(ActionEvent e) {
+		    	if(mainApp.getFile()!=null){
+		    		handleAnalyse();
+		    	}else{
+		            // Nothing selected.
+		            Alert alert = new Alert(AlertType.WARNING);
+		            alert.initOwner(mainApp.getPrimaryStage());
+		            alert.setTitle("No File");
+		            alert.setHeaderText("No File Selected");
+		            alert.setContentText("Please select a file.");
+
+		            alert.showAndWait();
+		    	}
+		    		
+		    }
+		});
 		
 		textArea.setEditable(false);
 		
