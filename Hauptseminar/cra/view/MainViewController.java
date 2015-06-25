@@ -12,12 +12,12 @@ import java.util.concurrent.TimeUnit;
 import cra.MainApp;
 import cra.APSP.Algorithmus;
 import cra.APSP.Dijkstra;
-import cra.APSP.DijkstraRec;
 import cra.model.Element;
 import cra.model.PathSet;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import filtering.LinkFilterThread;
 import filtering.NPFilter;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -25,12 +25,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.SplitMenuButton;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
+import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 
 public class MainViewController {
-	
 	
 	@FXML
 	private CheckBox printNeighbors;
@@ -39,15 +38,25 @@ public class MainViewController {
 	private Label filePath;
 	
 	@FXML
+	private Label statusLabel;
+	
+	@FXML
 	private ComboBox<String> library;
 	
 	@FXML
 	private ComboBox<String> measure;
 	
+	@FXML
+	private Spinner<Integer> printQuantity;
+	
+	@FXML
+	private TextArea textArea;
+	
 	private MainApp mainApp;
 	
-	public static int counter = 0;
+	public int counter = 0;
 	private static boolean algoFinished = false;
+	private ConcurrentLinkedQueue<Thread> threadPList = new ConcurrentLinkedQueue<Thread>();
 	
 	
 	
@@ -65,14 +74,15 @@ public class MainViewController {
         fileChooser.getExtensionFilters().add(extFilter);
         
         //TODO TO IMPLEMENT OR NOT TO IMPLEMENT
-//        FileChooser.ExtensionFilter txtFilter = new FileChooser.ExtensionFilter(
-//                "TXT files (*.txt)", "*.txt");        
-//        fileChooser.getExtensionFilters().add(txtFilter);
+        FileChooser.ExtensionFilter txtFilter = new FileChooser.ExtensionFilter(
+                "TXT files (*.txt)", "*.txt");        
+        fileChooser.getExtensionFilters().add(txtFilter);
 
         // Show open file dialog
         File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
 
         if (file != null) {
+        	mainApp.setFile(file);
             mainApp.loadXml(file);
             filePath.setText(file.getAbsolutePath());
         }
@@ -80,165 +90,45 @@ public class MainViewController {
 	
 	@FXML
 	private void handleAnalyse(){
-		long totalTime = System.currentTimeMillis();
-		//TODO REMOVE THIS BEFORE SUBMISSION
-//		NPFilter test = new NPFilter();
-//		test.test("Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper,");
-		
-
-		ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases = new ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>>();
-		System.out.print("Tagging and linking ... ");
-		long start = System.currentTimeMillis();
-		ConcurrentLinkedQueue<String> abstracts = new ConcurrentLinkedQueue<String>();
-		abstracts = mainApp.getAbstracts();
-		
-		
-		
-		LinkedList<LinkFilterThread> threadList = new LinkedList<LinkFilterThread>();
-		for(int i = 0; i<Runtime.getRuntime().availableProcessors(); i++){
-			LinkFilterThread thread = new LinkFilterThread(abstracts, nounPhrases, library.getSelectionModel().getSelectedIndex());
-			thread.setName(Integer.toString(i));
-			threadList.add(thread);
-			thread.start();
-		}
-		System.out.print("Thread count: "+threadList.size()+" ... ");
-		for(LinkFilterThread t: threadList){
-			try {
-				t.join();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+		MainViewController controller = this;
+		for(Thread thread: threadPList){
+			if(thread!=null && thread.isAlive()){
+				thread.interrupt();
+				threadPList.remove(thread);
 			}
 		}
-		
-		
-		System.out.println(" finished in "+(System.currentTimeMillis()-start)+"ms");
-		// Merge
-		System.out.print("Merging ...");
-		start = System.currentTimeMillis();
-		LinkedList<Element> mergeList = new LinkedList<Element>();
-		int i = 0;
-		int id = 0;
-		for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
-			Element mergeTarget = new Element(eList.peek().getNounPhrase());
-			mergeTarget.setId(id);;
-			id++;
-			if(eList!=null)
-			for(Element e: eList){
-				i++;
-				for(Element n: e.getNeighbour()){
-
-					if(!mergeTarget.getNeighbour().contains(n))
-						mergeTarget.addNeighbour(n);
-						n.getNeighbour().remove(e);
-						n.addNeighbour(mergeTarget);
-				}					
-			}
-			mergeList.add(mergeTarget);
-		}
-
-		System.out.println(" finished in "+(System.currentTimeMillis()-start)+"ms. "+i+" nouns merged into "+nounPhrases.size()+" nouns. ");
-		System.out.println("Total time: "+(System.currentTimeMillis()-totalTime)+"ms. Printing in 5 Seconds");
-//		try {
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		switch(measure.getSelectionModel().getSelectedIndex()){
-			case 0:
-				algoFinished = false;
-				long algoDuration = System.currentTimeMillis();
-				counter = 0;
-				new Thread(new Runnable() {
-		            @Override
-		            public void run() {
-		        		try {
-		        			while(!algoFinished){
-		        				System.out.println(counter+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
-		        				Thread.sleep(1000);        				
-		        			}		
-		        		} catch (InterruptedException e) {
-		        			// TODO Auto-generated catch block
-		        			e.printStackTrace();
-		        		}
-		        }}).start();
-				Algorithmus algo = new Algorithmus();
-				for(Element e: mergeList){
-					algo.computePaths(e);
-					counter++;
-				}
-				System.out.println("Total: "+counter);
-				algoFinished = true;
-	
-				int k = 0;
-				for(Element e: mergeList){
-					for(PathSet p: e.shortestPaths){
-						System.out.print(p.getSource().getNounPhrase()+"=>"+p.getTarget().getNounPhrase()+": ");
-						for(Element g: p.getPath()){
-							System.out.print(g.getNounPhrase()+", ");
-						}
-						System.out.println("");
-						k++;
-						if(k>100)
-							break;
-					}
-					if(k>100)
-						break;
-				}
-				break;
-			case 1:
-				k = 0;
-				mergeList.sort(new Comparator<Element>(){
-					@Override
-					public int compare(Element o1, Element o2) {
-						if(o1.getNeighbour().size()>o2.getNeighbour().size())
-							return -1;
-						if(o1.getNeighbour().size()<o2.getNeighbour().size())
-							return 1;
-						return 0;
-					}
-					
-				});
+		Thread thread = new Thread(new Runnable() {
+			
+            @Override
+            public void run() {
+				long totalTime = System.currentTimeMillis();
+				textArea.setText("");
+				//TODO REMOVE THIS BEFORE SUBMISSION
+		//		NPFilter test = new NPFilter();
+		//		test.test("Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper,");
 				
-				for(Element e: mergeList){
-					String testung = e.getNounPhrase()+": "+e.getNeighbour().size();
-					System.out.println(testung);
-					if(k>30)
-						break;
-					k++;
+		
+				ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases = new ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>>();
+				System.out.print("Tagging and linking ... ");
+				long start = System.currentTimeMillis();
+				ConcurrentLinkedQueue<String> abstracts = new ConcurrentLinkedQueue<String>();
+				abstracts = mainApp.getAbstracts();
+				if(abstracts.size()==0){
+					mainApp.loadXml(mainApp.getFile());
+					abstracts = mainApp.getAbstracts();
 				}
-				break;
-			case 2:
-				algoFinished = false;
-				algoDuration = System.currentTimeMillis();
-				counter = 0;
-				new Thread(new Runnable() {
-		            @Override
-		            public void run() {
-		        		try {
-		        			while(!algoFinished){
-		        				System.out.println(counter+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
-		        				Thread.sleep(1000);        				
-		        			}		
-		        		} catch (InterruptedException e) {
-		        			// TODO Auto-generated catch block
-		        			e.printStackTrace();
-		        		}
-		        }}).start();
-				ConcurrentLinkedQueue<Element> eList = new ConcurrentLinkedQueue<Element>();
-				for(Element e: mergeList){
-					eList.add(e);
-				}
-				LinkedList<DijkstraRec> dijkstraRec = new LinkedList<DijkstraRec>();
-				for(int l = 0; l<Runtime.getRuntime().availableProcessors(); l++){
-					DijkstraRec thread = new DijkstraRec(eList, this);
-					thread.setName(Integer.toString(l));
-					dijkstraRec.add(thread);
+				
+				
+				LinkedList<LinkFilterThread> threadList = new LinkedList<LinkFilterThread>();
+				for(int i = 0; i<Runtime.getRuntime().availableProcessors(); i++){
+					LinkFilterThread thread = new LinkFilterThread(abstracts, nounPhrases, library.getSelectionModel().getSelectedIndex(), controller);
+					thread.setName(Integer.toString(i));
+					threadList.add(thread);
+					threadPList.add(thread);
 					thread.start();
 				}
 				System.out.print("Thread count: "+threadList.size()+" ... ");
-				for(DijkstraRec t: dijkstraRec){
+				for(LinkFilterThread t: threadList){
 					try {
 						t.join();
 					} catch (InterruptedException e1) {
@@ -246,73 +136,229 @@ public class MainViewController {
 						e1.printStackTrace();
 					}
 				}
-//				DijkstraRec dijkstra = null;
-//				for(Element e: mergeList){
-//					dijkstra = new DijkstraRec();
-//					dijkstra.computePaths(e);
-//					HashMap<Element, Integer> overList = new HashMap<Element, Integer>();
-//					int totalPaths = 0;
-//					Element last = null;
-//					if(!e.shortestPaths.isEmpty())
-//						 last = e.shortestPaths.getFirst().getTarget();
-//					for(PathSet path: e.shortestPaths){						
-//						totalPaths++;
-//						if(overList.get(path.getTarget())==null)
-//							overList.put(path.getTarget(), 0);
-//						Integer tempInt = overList.get(path.getTarget());
-//						tempInt++;
-//						overList.put(path.getTarget(), tempInt);
-//						if(path.getTarget()!=last){
-//							for(Element in: overList.keySet()){
-//								float influence = in.getInfluence()+(overList.get(in)/totalPaths);
-//								in.setInfluence(influence);
-//							}
-//							totalPaths = 0;
-//							overList.clear();
-//						}
-//						last = path.getTarget();
-//					}
-//					e.shortestPaths.clear();
-//					counter++;
-//				}
-				for(Element e: mergeList){
-					float influence = e.getInfluence()/((mergeList.size()-1)*(mergeList.size()-2)/2);
-					e.setInfluence(influence);					
-				}
-				mergeList.sort(new Comparator<Element>(){
-
-					@Override
-					public int compare(Element arg0, Element arg1) {
-						if(arg0.getInfluence()>arg1.getInfluence())
-							return -1;
-						if(arg0.getInfluence()<arg1.getInfluence())
-							return 1;
-						return 0;
+				
+				
+				System.out.println(" finished in "+(System.currentTimeMillis()-start)+"ms");
+				// Merge
+				System.out.print("Merging ...");
+				start = System.currentTimeMillis();
+				LinkedList<Element> mergeList = new LinkedList<Element>();
+				int i = 0;
+				int id = 0;
+				for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
+					Element mergeTarget = new Element(eList.peek().getNounPhrase());
+					mergeTarget.setId(id);
+					setStatus("Merging: "+id+"/"+nounPhrases.size());
+					id++;
+					if(eList!=null)
+					for(Element e: eList){
+						i++;
+						for(Element n: e.getNeighbour()){
+		
+							if(!mergeTarget.getNeighbour().contains(n))
+								mergeTarget.addNeighbour(n);
+								n.getNeighbour().remove(e);
+								n.addNeighbour(mergeTarget);
+						}					
 					}
-					
-				});
-				k = 0;
-				for(Element e: mergeList){
-					System.out.println(e.getNounPhrase()+": "+e.getInfluence());
-					k++;
-					if(k>50)
+					mergeList.add(mergeTarget);
+				}
+		
+				System.out.println(" finished in "+(System.currentTimeMillis()-start)+"ms. "+i+" nouns merged into "+nounPhrases.size()+" nouns. ");
+				System.out.println("Total time: "+(System.currentTimeMillis()-totalTime)+"ms. Printing in 5 Seconds");
+		//		try {
+		//			Thread.sleep(5000);
+		//		} catch (InterruptedException e) {
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		}
+				String print ="";
+				switch(measure.getSelectionModel().getSelectedIndex()){
+					case 0:
+						algoFinished = false;
+						long algoDuration = System.currentTimeMillis();
+						counter = 0;
+						new Thread(new Runnable() {
+				            @Override
+				            public void run() {
+				        		try {
+				        			while(!algoFinished){
+				        				System.out.println(counter+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
+				        				Thread.sleep(1000);        				
+				        			}		
+				        		} catch (InterruptedException e) {
+				        			// TODO Auto-generated catch block
+				        			e.printStackTrace();
+				        		}
+				        }}).start();
+						Algorithmus algo = new Algorithmus();
+						for(Element e: mergeList){
+							algo.computePaths(e);
+							for(Element reset: mergeList){
+								reset.setMinDistance(Double.MAX_VALUE);
+								reset.setPrevious(null);
+							}
+							counter++;
+						}
+						System.out.println("Total: "+counter);
+						algoFinished = true;
+			
+						int k = 0;
+						for(Element e: mergeList){
+		//					if(e.getNounPhrase().equals("half")){
+							for(PathSet p: e.shortestPaths){
+								System.out.print(p.getSource().getNounPhrase()+"=>"+p.getTarget().getNounPhrase()+": ");
+								for(Element g: p.getPath()){
+									System.out.print(g.getNounPhrase()+", ");
+								}
+								System.out.println("");
+								k++;
+								if(k>printQuantity.getValue())
+									break;
+							}
+		//					}
+						}
+						break;
+					case 1:
+						k = 1;
+						mergeList.sort(new Comparator<Element>(){
+							@Override
+							public int compare(Element o1, Element o2) {
+								if(o1.getNeighbour().size()>o2.getNeighbour().size())
+									return -1;
+								if(o1.getNeighbour().size()<o2.getNeighbour().size())
+									return 1;
+								return 0;
+							}
+							
+						});
+						
+						for(Element e: mergeList){
+							String testung = k+". "+e.getNounPhrase()+": "+e.getNeighbour().size();
+							System.out.println(testung);
+							print += testung+"\n";
+							if(k>printQuantity.getValue())
+								break;
+							k++;
+						}
+						break;
+					case 2:
+						algoFinished = false;
+						algoDuration = System.currentTimeMillis();
+						counter = 0;
+						System.out.println("");
+						Thread countdown = new Thread(new Runnable() {
+				            @Override
+				            public void run() {
+				        		try {
+				        			String status ="";
+				        			while(!algoFinished){
+				        				status = "Calculating influence: "+counter+"/"+mergeList.size()+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration);
+				        				System.out.println(status);
+				        				setStatus(status);
+				        				Thread.sleep(1000);        				
+				        			}		
+				        		} catch (InterruptedException e) {
+				        			// TODO Auto-generated catch block
+				        			e.printStackTrace();
+				        		}
+				        }});
+						countdown.start();
+						ConcurrentLinkedQueue<Element> eList = new ConcurrentLinkedQueue<Element>();
+						for(Element e: mergeList){
+							eList.add(e);
+						}
+						LinkedList<Dijkstra> dijkstraRec = new LinkedList<Dijkstra>();
+						for(int l = 0; l<Runtime.getRuntime().availableProcessors(); l++){
+							Dijkstra thread = new Dijkstra(eList, controller);
+							thread.setName(Integer.toString(l));
+		//					thread.setPriority(Thread.MIN_PRIORITY);
+							dijkstraRec.add(thread);
+							threadPList.add(thread);
+							thread.start();
+						}
+						System.out.println("Thread count: "+threadList.size()+" ... ");
+						for(Dijkstra t: dijkstraRec){
+							try {
+								t.join();
+							} catch (InterruptedException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+		//				k = 0;
+		//				for(Element e: mergeList){
+		//					if(e.getNounPhrase().equals("snippet")){					
+		//					for(PathSet p: e.shortestPaths){
+		//						System.out.print(p.getSource().getNounPhrase()+"=>"+p.getTarget().getNounPhrase()+": ");
+		//						for(Element ep: p.getPath()){
+		//							System.out.print(ep.getNounPhrase()+", ");
+		//						}
+		//						System.out.println("");
+		//					}
+		//					k++;
+		//					if(k>100)
+		//						break;
+		//					}
+		//				}
+						for(Element e: mergeList){
+							float influence = e.getInfluence()/((mergeList.size()-1)*(mergeList.size()-2)/2);
+							e.setInfluence(influence);					
+						}
+						mergeList.sort(new Comparator<Element>(){
+		
+							@Override
+							public int compare(Element arg0, Element arg1) {
+								if(arg0.getInfluence()>arg1.getInfluence())
+									return -1;
+								if(arg0.getInfluence()<arg1.getInfluence())
+									return 1;
+								return 0;
+							}
+							
+						});
+						k = 1;
+						for(Element e: mergeList){
+							System.out.println(k+". "+e.getNounPhrase()+": "+e.getInfluence());
+							print += k+". "+e.getNounPhrase()+": "+e.getInfluence()+"\n";
+							k++;
+							if(k>printQuantity.getValue())
+								break;
+						}
+						
+						System.out.println("Total: "+counter);
+						algoFinished = true;
+						
+						break;
+					default:
 						break;
 				}
-				
-				System.out.println("Total: "+counter);
-				algoFinished = true;
-				
-				break;
-			default:
-				break;
-	}
-		
-	
-
-
+				textArea.setText(print);
+				setStatus("done");
+            }});
+		thread.start();
+		threadPList.add(thread);
 	}
 	
-	   /**
+	@FXML
+	private void handleCancle(){
+		for(Thread thread: threadPList){
+			if(thread!=null && thread.isAlive()){
+				thread.interrupt();
+				threadPList.remove(thread);
+			}
+		}
+	}
+	
+	public void setStatus(String text){
+	     Platform.runLater(new Runnable() {
+	         @Override public void run() {
+	        	 statusLabel.setText(text);
+	         }
+	       });
+	}
+	
+	/**
      * Convert a millisecond duration to a string format
      * 
      * @param millis A duration to convert to a string form
@@ -361,6 +407,14 @@ public class MainViewController {
 				);
 		measure.setItems(measureContent);
 		measure.getSelectionModel().selectFirst();
+		
+		IntegerSpinnerValueFactory factory = new IntegerSpinnerValueFactory(1,Integer.MAX_VALUE,50,1);
+		printQuantity.setValueFactory(factory);
+		
+		textArea.setEditable(false);
+		
+//		IntegerSpinnerValueFactory spinnerfactory = new IntegerSpinnerValueFactory(1,Integer.MAX_VALUE, 30, 1);
+		
 		//Load Tokenizers
 		new Thread(new Runnable() {
             @Override

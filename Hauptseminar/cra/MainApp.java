@@ -18,6 +18,7 @@ public class MainApp extends Application {
     private Stage primaryStage;
     private AnchorPane rootLayout;
     private ConcurrentLinkedQueue<String> abstracts;
+    private File file;
         
 	@Override
 	public void start(Stage primaryStage) {
@@ -81,5 +82,13 @@ public class MainApp extends Application {
 
 	public void setAbstracts(ConcurrentLinkedQueue<String> abstracts) {
 		this.abstracts = abstracts;
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
 	}
 }
