@@ -30,28 +30,23 @@ public class LinkFilterThread extends Thread {
 	public void run() {
 		String abs = "";
 		NPFilter npfilter = new NPFilter();
-		// npfilter.GetTaggedWordsFromSentence("");
 		ArrayList<String[]> taggedWordList = new ArrayList<String[]>();
 		LinkedList<Element> lastElements = new LinkedList<Element>();
 		Element tempElement = null;
-		long totalTagged = 0;
 		while (!abstractList.isEmpty()) {		
 			abs = abstractList.poll();
 			// System.out.println(abstracts.item(i).getTextContent());
-			long tagStart = System.currentTimeMillis();
 			switch (tagger) {
-			case 0:
-				taggedWordList = npfilter.GetTaggedWordsFromSentence(abs);
-				break;
-			case 1:
-				taggedWordList = npfilter.StanfordNlpTagger(abs);
-				break;
+				case 0:
+					taggedWordList = npfilter.GetTaggedWordsFromSentence(abs);
+					break;
+				case 1:
+					taggedWordList = npfilter.StanfordNlpTagger(abs);
+					break;
 			}
 
-			totalTagged += (System.currentTimeMillis() - tagStart);
 			String lastTag = "";
 			for (String[] s : taggedWordList) {
-				// TODO Fix this
 				if (s[0].equals("NN")
 						|| s[0].equals("NNS")
 						|| s[0].equals("NNP")
@@ -100,10 +95,10 @@ public class LinkFilterThread extends Thread {
 				}
 
 					
-				if (s[0].equals(".")) {
-					tempElement = null;
-					lastElements.clear();
-				}
+//				if (s[0].equals(".")) {
+////					tempElement = null;
+//					lastElements.clear();
+//				}
 				lastTag = s[0];
 			}
 			tempElement = null;
