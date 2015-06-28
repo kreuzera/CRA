@@ -122,7 +122,7 @@ public class NPFilter {
 	 * @return
 	 * @throws IOException
 	 */
-	public ArrayList<String[]> WordTagger(String[] words) throws IOException {
+	private ArrayList<String[]> WordTagger(String[] words) throws IOException {
 		if (taggerModel == null)
 			taggerModel = new POSModelLoader().load(new File(
 					"en-pos-maxent.bin"));
@@ -160,7 +160,7 @@ public class NPFilter {
 	 * @throws InvalidFormatException
 	 * @throws IOException
 	 */
-	public static String[] WordTokenizer(String sentence)
+	private static String[] WordTokenizer(String sentence)
 			throws InvalidFormatException, IOException {
 		if (tokenizerModel == null)
 			tokenizerModel = new TokenizerModel(new FileInputStream(
@@ -197,13 +197,13 @@ public class NPFilter {
 		return wordList;
 	}
 
-	public String StanfordLemmatize(String word, String tag) {
+	private String StanfordLemmatize(String word, String tag) {
 		if (morph == null)
 			morph = new Morphology();
 		return morph.lemma(word, tag);
 	}
 
-	public String OpenNlpLemmatize(String word, String tag) {
+	private String OpenNlpLemmatize(String word, String tag) {
 		JWNLDictionary dic = null;
 		String[] lemmas = null;
 		if (dic == null){
