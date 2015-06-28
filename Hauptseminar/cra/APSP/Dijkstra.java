@@ -26,32 +26,6 @@ public class Dijkstra extends Thread{
 		while(!listOfNodes.isEmpty()&&!this.isInterrupted()){
 			Element e = listOfNodes.poll();
 			computePaths(e);
-			HashMap<Element, Integer> overList = new HashMap<Element, Integer>();
-			int totalPaths = 0;
-			Element last = null;
-			if(!e.shortestPaths.isEmpty())
-				 last = e.shortestPaths.getFirst().getTarget();
-			for(PathSet path: e.shortestPaths){						
-				totalPaths++;
-				for(Element pElement: path.getPath()){
-					if(overList.get(pElement)==null)
-						overList.put(pElement, 0);
-					Integer tempInt = overList.get(pElement);
-					tempInt++;
-					overList.put(pElement, tempInt);
-				}
-				
-				if(path.getTarget()!=last){
-					for(Element in: overList.keySet()){
-						in.setInfluence(in.getInfluence()+((float)overList.get(in)/totalPaths));
-					}
-					totalPaths = 0;
-					overList.clear();
-				}
-				last = path.getTarget();
-			}
-			e.shortestPaths.clear();
-			controller.counter++;
 		}
 	}
 	
@@ -103,7 +77,33 @@ public class Dijkstra extends Thread{
 		for(Element e: visited){
 			if(e!=start && start.getId()<e.getId())
 				fillPaths(e, new LinkedList<Element>());
-		}		
+		}
+		
+		HashMap<Element, Integer> overList = new HashMap<Element, Integer>();
+		int totalPaths = 0;
+		Element last = null;
+		if(!start.shortestPaths.isEmpty())
+			 last = start.shortestPaths.getFirst().getTarget();
+		for(PathSet path: start.shortestPaths){						
+			totalPaths++;
+			for(Element pElement: path.getPath()){
+				if(overList.get(pElement)==null)
+					overList.put(pElement, 0);
+				Integer tempInt = overList.get(pElement);
+				tempInt++;
+				overList.put(pElement, tempInt);
+			}
+			
+			if(path.getTarget()!=last){
+				for(Element in: overList.keySet()){
+					in.setInfluence(in.getInfluence()+((float)overList.get(in)/totalPaths));
+				}
+				totalPaths = 0;
+				overList.clear();
+			}
+			last = path.getTarget();
+		}
+		start.shortestPaths.clear();
 		
 	}
 	

@@ -132,7 +132,7 @@ public class NPFilter {
 		for (int i = 0; i < tags.length; i++) {
 			String[] temp = { tags[i], words[i] };
 			if (temp[0].equals("NNS") || temp[0].equals("NNPS")) {
-				temp[1] = OpenNlpLemmatize(temp[1], temp[0]);
+				temp[1] = StanfordLemmatize(temp[1], temp[0]);
 			}
 			wordList.add(temp);
 		}

@@ -8,7 +8,9 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import cra.CRAThread;
 import cra.MainApp;
 import cra.APSP.Algorithmus;
 import cra.APSP.Dijkstra;
@@ -62,9 +64,8 @@ public class MainViewController {
 	
 	private MainApp mainApp;
 	
-	public int counter = 0;
+	public AtomicInteger counter;
 	private static boolean algoFinished = false;
-	private ConcurrentLinkedQueue<Thread> threadPList = new ConcurrentLinkedQueue<Thread>();
 	
 	
 	
@@ -98,268 +99,159 @@ public class MainViewController {
 	
 	@FXML
 	private void handleAnalyse(){
-		analyseButton.setDisable(true);
 		MainViewController controller = this;
-		for(Thread thread: threadPList){
-			if(thread!=null && thread.isAlive()){
-				thread.interrupt();
-				threadPList.remove(thread);
-			}
-		}
-		Thread thread = new Thread(new Runnable() {
-			
-            @Override
-            public void run() {
-            	
-				long totalTime = System.currentTimeMillis();
-				textArea.setText("");
-				//TODO REMOVE THIS BEFORE SUBMISSION
-		//		NPFilter test = new NPFilter();
-		//		test.test("Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper,");
+		LinkFilterThread.resetTagTime();
+		Thread m = new Thread(new Runnable(){
+
+			@Override
+			public void run() {
+				analyseButton.setDisable(true);
 				
-		
-				ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>> nounPhrases = new ConcurrentHashMap<String, ConcurrentLinkedQueue<Element>>();
-				System.out.print("Tagging and linking ... ");
-				long start = System.currentTimeMillis();
+				counter = new AtomicInteger(0);
+				long algoDuration = System.currentTimeMillis();
+				textArea.setText("");
+				String print = "";
+				//TODO REMOVE THIS BEFORE SUBMISSION
+//				NPFilter test = new NPFilter();
+//				test.test("Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper,");
+				
 				ConcurrentLinkedQueue<String> abstracts = new ConcurrentLinkedQueue<String>();
 				abstracts = mainApp.getAbstracts();
 				if(abstracts.size()==0){
 					mainApp.loadXml(mainApp.getFile());
 					abstracts = mainApp.getAbstracts();
 				}
-				
-				
-				LinkedList<LinkFilterThread> threadList = new LinkedList<LinkFilterThread>();
-				for(int i = 0; i<Runtime.getRuntime().availableProcessors(); i++){
-					LinkFilterThread thread = new LinkFilterThread(abstracts, nounPhrases, library.getSelectionModel().getSelectedIndex(), controller);
-					thread.setName(Integer.toString(i));
+				int numberOfAbstract = abstracts.size();
+				algoFinished = false;
+				new Thread(new Runnable() {
+		            @Override
+		            public void run() {
+		        		try {
+		        			while(!algoFinished){
+		        				String status = counter.get()+"/"+numberOfAbstract+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration);
+		        				System.out.println(status);
+		        				setStatus(status);
+		        				Thread.sleep(1000);        				
+		        			}		
+		        		} catch (InterruptedException e) {
+		        			// TODO Auto-generated catch block
+		        			e.printStackTrace();
+		        		}
+		        }}).start();
+				ConcurrentLinkedQueue<LinkedList<Element>> targetList = new ConcurrentLinkedQueue<LinkedList<Element>>();
+				LinkedList<CRAThread> threadList = new LinkedList<CRAThread>();
+				for(int i = 0; i< Runtime.getRuntime().availableProcessors(); i++){
+					CRAThread thread = new CRAThread(abstracts, controller, targetList);
 					threadList.add(thread);
-					threadPList.add(thread);
 					thread.start();
 				}
-				System.out.print("Thread count: "+threadList.size()+" ... ");
-				for(LinkFilterThread t: threadList){
+				for(CRAThread t: threadList){
 					try {
 						t.join();
-					} catch (InterruptedException e1) {
+					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						e.printStackTrace();
 					}
 				}
-				
-				
-				System.out.println(" finished in "+(System.currentTimeMillis()-start)+"ms");
-				// Merge
-				System.out.print("Merging ...");
-				start = System.currentTimeMillis();
-				LinkedList<Element> mergeList = new LinkedList<Element>();
-				int i = 0;
-				int id = 0;
-				for(ConcurrentLinkedQueue<Element> eList: nounPhrases.values()){
-					Element mergeTarget = new Element(eList.peek().getNounPhrase());
-					mergeTarget.setId(id);
-					setStatus("Merging: "+id+"/"+nounPhrases.size());
-					id++;
-					if(eList!=null)
-					for(Element e: eList){
-						i++;
-						for(Element n: e.getNeighbour()){
-		
-							if(!mergeTarget.getNeighbour().contains(n))
-								mergeTarget.addNeighbour(n);
-								n.getNeighbour().remove(e);
-								n.addNeighbour(mergeTarget);
-						}					
-					}
-					mergeList.add(mergeTarget);
-				}
-		
-				System.out.println(" finished in "+(System.currentTimeMillis()-start)+"ms. "+i+" nouns merged into "+nounPhrases.size()+" nouns. ");
-				System.out.println("Total time: "+(System.currentTimeMillis()-totalTime)+"ms. Printing in 5 Seconds");
-		//		try {
-		//			Thread.sleep(5000);
-		//		} catch (InterruptedException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
-				String print ="";
+				algoFinished = true;
 				switch(measure.getSelectionModel().getSelectedIndex()){
 					case 0:
-						algoFinished = false;
-						long algoDuration = System.currentTimeMillis();
-						counter = 0;
-						new Thread(new Runnable() {
-				            @Override
-				            public void run() {
-				        		try {
-				        			while(!algoFinished){
-				        				System.out.println(counter+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
-				        				Thread.sleep(1000);        				
-				        			}		
-				        		} catch (InterruptedException e) {
-				        			// TODO Auto-generated catch block
-				        			e.printStackTrace();
-				        		}
-				        }}).start();
-						Algorithmus algo = new Algorithmus();
-						for(Element e: mergeList){
-							algo.computePaths(e);
-							for(Element reset: mergeList){
-								reset.setMinDistance(Double.MAX_VALUE);
-								reset.setPrevious(null);
-							}
-							counter++;
-						}
-						System.out.println("Total: "+counter);
-						algoFinished = true;
-			
 						int k = 0;
-						for(Element e: mergeList){
-		//					if(e.getNounPhrase().equals("half")){
-							for(PathSet p: e.shortestPaths){
-								System.out.print(p.getSource().getNounPhrase()+"=>"+p.getTarget().getNounPhrase()+": ");
-								for(Element g: p.getPath()){
-									System.out.print(g.getNounPhrase()+", ");
+						int count = 0;
+						LinkedList<Element> finalList = new LinkedList<Element>();
+						for(LinkedList<Element> abstr: targetList){
+							for(Element e: abstr){
+								count++;
+								setStatus("Calculating average: "+count);
+								if(!finalList.contains(e))
+									finalList.add(e);
+								else{
+									Element temp = null;
+									for(Element f: finalList){
+										if(f.equals(e))
+											temp = f;
+									}
+									float influence  = temp.getInfluence();
+									if(!Float.isNaN(e.getInfluence()))
+											influence += e.getInfluence();
+									temp.setInfluence(influence);
 								}
-								System.out.println("");
-								k++;
-								if(k>printQuantity.getValue())
-									break;
 							}
-		//					}
 						}
-						break;
-					case 1:
-						k = 1;
-						mergeList.sort(new Comparator<Element>(){
+						for(Element e: finalList){
+							float influence = e.getInfluence();
+							e.setInfluence(influence/numberOfAbstract);
+						}
+						finalList.sort(new Comparator<Element>(){
 							@Override
-							public int compare(Element o1, Element o2) {
-								if(o1.getNeighbour().size()>o2.getNeighbour().size())
-									return -1;
-								if(o1.getNeighbour().size()<o2.getNeighbour().size())
-									return 1;
-								return 0;
+							public int compare(Element o1, Element o2) {								
+								return Float.compare(o2.getInfluence(),o1.getInfluence());
 							}
-							
-						});
-						
-						for(Element e: mergeList){
-							String testung = k+". "+e.getNounPhrase()+": "+e.getNeighbour().size();
-							System.out.println(testung);
-							print += testung+"\n";
-							if(k>printQuantity.getValue())
-								break;
-							k++;
-						}
-						break;
-					case 2:
-						algoFinished = false;
-						algoDuration = System.currentTimeMillis();
-						counter = 0;
-						System.out.println("");
-						Thread countdown = new Thread(new Runnable() {
-				            @Override
-				            public void run() {
-				        		try {
-				        			String status ="";
-				        			while(!algoFinished){
-				        				status = "Calculating influence: "+counter+"/"+mergeList.size()+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration);
-				        				System.out.println(status);
-				        				setStatus(status);
-				        				Thread.sleep(1000);        				
-				        			}		
-				        		} catch (InterruptedException e) {
-				        			// TODO Auto-generated catch block
-				        			e.printStackTrace();
-				        		}
-				        }});
-						countdown.start();
-						ConcurrentLinkedQueue<Element> eList = new ConcurrentLinkedQueue<Element>();
-						for(Element e: mergeList){
-							eList.add(e);
-						}
-						LinkedList<Dijkstra> dijkstraRec = new LinkedList<Dijkstra>();
-						for(int l = 0; l<Runtime.getRuntime().availableProcessors(); l++){
-							Dijkstra thread = new Dijkstra(eList, controller);
-							thread.setName(Integer.toString(l));
-		//					thread.setPriority(Thread.MIN_PRIORITY);
-							dijkstraRec.add(thread);
-							threadPList.add(thread);
-							thread.start();
-						}
-						System.out.println("Thread count: "+threadList.size()+" ... ");
-						for(Dijkstra t: dijkstraRec){
-							try {
-								t.join();
-							} catch (InterruptedException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						}
-		//				k = 0;
-		//				for(Element e: mergeList){
-		//					if(e.getNounPhrase().equals("snippet")){					
-		//					for(PathSet p: e.shortestPaths){
-		//						System.out.print(p.getSource().getNounPhrase()+"=>"+p.getTarget().getNounPhrase()+": ");
-		//						for(Element ep: p.getPath()){
-		//							System.out.print(ep.getNounPhrase()+", ");
-		//						}
-		//						System.out.println("");
-		//					}
-		//					k++;
-		//					if(k>100)
-		//						break;
-		//					}
-		//				}
-						for(Element e: mergeList){
-							float influence = e.getInfluence()/((float)(mergeList.size()-1)*(mergeList.size()-2)/2);
-							e.setInfluence(influence);					
-						}
-						mergeList.sort(new Comparator<Element>(){
-		
-							@Override
-							public int compare(Element arg0, Element arg1) {
-								if(arg0.getInfluence()>arg1.getInfluence())
-									return -1;
-								if(arg0.getInfluence()<arg1.getInfluence())
-									return 1;
-								return 0;
-							}
-							
 						});
 						k = 1;
-						for(Element e: mergeList){
-							System.out.println(k+". "+e.getNounPhrase()+": "+e.getInfluence());
+						for(Element e: finalList){
 							print += k+". "+e.getNounPhrase()+": "+e.getInfluence()+"\n";
 							k++;
 							if(k>printQuantity.getValue())
 								break;
 						}
-						
-						System.out.println("Total: "+counter);
-						algoFinished = true;
-						
 						break;
-					default:
+					case 1:
+						finalList = new LinkedList<Element>();
+						HashMap<String, Float> avgHelper = new HashMap<String, Float>();
+						for(LinkedList<Element> abstr: targetList){
+							for(Element e: abstr){
+								if(!finalList.contains(e)){
+									finalList.add(e);
+									avgHelper.put(e.getNounPhrase(), (float)e.getNeighbour().size());
+								}else{
+									float temp = avgHelper.get(e.getNounPhrase());
+									temp += e.getNeighbour().size();
+									avgHelper.put(e.getNounPhrase(), temp);
+								}
+							}
+						}
+						for(Element e: finalList){
+//							System.out.println(avgHelper.get(e.getNounPhrase()));
+							float avg = avgHelper.get(e.getNounPhrase())/numberOfAbstract;
+//							System.out.println(avg);
+							avgHelper.put(e.getNounPhrase(), avg);
+						}
+						finalList.sort(new Comparator<Element>(){
+
+							@Override
+							public int compare(Element arg0, Element arg1) {
+								return avgHelper.get(arg1.getNounPhrase()).compareTo(avgHelper.get(arg0.getNounPhrase()));
+							}
+							
+						});
+						k = 1;
+						for(Element e: finalList){
+							print += k+". "+e.getNounPhrase()+": "+avgHelper.get(e.getNounPhrase())+"\n";
+							k++;
+							if(k>printQuantity.getValue())
+								break;
+						}
 						break;
+
 				}
+				
+				
 				textArea.setText(print);
-				setStatus("done");
+				System.out.println(print);
+				setStatus(numberOfAbstract+" abstracts analyzed in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
+				System.out.println(numberOfAbstract+" abstracts analyzed in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
+				System.out.println("Total time to tag all words: "+LinkFilterThread.getTotalTagTime()+"ms split across "+Runtime.getRuntime().availableProcessors()+" Threads equals "+(LinkFilterThread.getTotalTagTime()/Runtime.getRuntime().availableProcessors())+"ms per Thread on average");
 				analyseButton.setDisable(false);
-            }});
-		thread.start();
-		threadPList.add(thread);
-		
+			}
+			
+		});
+		m.start();
 	}
 	
 	@FXML
 	private void handleCancle(){
-		for(Thread thread: threadPList){
-			if(thread!=null && thread.isAlive()){
-				thread.interrupt();
-				threadPList.remove(thread);
-			}
-		}
+		//TODO do this
 	}
 	
 	public void setStatus(String text){
@@ -414,8 +306,7 @@ public class MainViewController {
 		library.getSelectionModel().selectFirst();
 		ObservableList<String> measureContent = FXCollections.observableArrayList(
 				"Betweeness centrality",
-				"Degree centrality",
-				"Betweeness centrality (alternative)"
+				"Degree centrality"
 				);
 		measure.setItems(measureContent);
 		measure.getSelectionModel().selectFirst();
@@ -454,6 +345,14 @@ public class MainViewController {
         		NPFilter.stanfordTagger = new MaxentTagger("english-left3words-distsim.tagger");
         }}).start();
 
+	}
+	
+	public int getLibraryModel(){
+		return library.getSelectionModel().getSelectedIndex();
+	}
+	
+	public int getMeasureModel(){
+		return measure.getSelectionModel().getSelectedIndex();
 	}
 
 	public MainApp getMainApp() {
