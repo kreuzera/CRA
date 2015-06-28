@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
 import net.didion.jwnl.JWNLException;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.stanford.nlp.util.CoreMap;
@@ -33,25 +32,16 @@ import edu.stanford.nlp.process.Morphology;
 
 public class NPFilter {
 
-	static Set<String> nounPhrases = new HashSet<String>();
-	static ParserModel chunkingModel;
-	static SentenceModel sentenceModel;
-	static POSModel taggerModel;
-	static TokenizerModel tokenizerModel;
+	private static Set<String> nounPhrases = new HashSet<String>();
+	private static ParserModel chunkingModel;
+	private static SentenceModel sentenceModel;
+	private static POSModel taggerModel;
+	private static TokenizerModel tokenizerModel;
 	public static MaxentTagger stanfordTagger;
-	private static NPFilter instance = null;
 	private Morphology morph;
-	static double loadInTime;
-	static double parseTime;
 	private ArrayList<String[]> wordList = new ArrayList<String[]>();
 	private Properties props = null;
 	private StanfordCoreNLP pipe = null;
-	public static NPFilter getInstance() {
-		if (instance == null) {
-			instance = new NPFilter();
-		}
-		return instance;
-	}
 
 	/**
 	 * returns an ArrayList of Tagged Words from a sentence For a documentation
@@ -62,47 +52,30 @@ public class NPFilter {
 	 * @param sentence
 	 * @return
 	 */
-	public ArrayList<String[]> GetTaggedWordsFromSentence(String sentence) {
+	
+	public ArrayList<String[]> OpenNlpTagger(String sentence) {
 		try {
 			wordList.clear();
+			sentence = sentence.replaceAll("[^\\dA-Za-z ]", "");
 			wordList = WordTagger(WordTokenizer(sentence));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return wordList;
-
 	}
 	
-	public void test(String sentence) {
+	public void ParseOutputTest(String sentence) {
 		try {
 			String[] sentences = SentenceTokenizer(sentence);
-			for(String s: sentences)
+			for (String s : sentences)
 				Parse(s);
-			for(String s: nounPhrases)
+			for (String s : nounPhrases)
 				System.out.println(s);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
-
-	/**
-	 * 
-	 * @param input
-	 */
-//	private static void NPDetect(String input) {
-//		try {
-//			String[] sentences = SentenceTokenizer(testSentence);
-//			for (String s : sentences)
-//				Parse(s);
-//			// for (String s : nounPhrases)
-//			// System.out.println(s);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 
 	/**
 	 * parses a String, tags its elements
@@ -143,6 +116,12 @@ public class NPFilter {
 		}
 	}
 
+	/**
+	 * Tags words using OpenNLP Framework
+	 * @param words
+	 * @return
+	 * @throws IOException
+	 */
 	public ArrayList<String[]> WordTagger(String[] words) throws IOException {
 		if (taggerModel == null)
 			taggerModel = new POSModelLoader().load(new File(
@@ -153,7 +132,7 @@ public class NPFilter {
 		for (int i = 0; i < tags.length; i++) {
 			String[] temp = { tags[i], words[i] };
 			if (temp[0].equals("NNS") || temp[0].equals("NNPS")) {
-				temp[1] = StanfordLemmatize(temp[1], temp[0]);
+				temp[1] = OpenNlpLemmatize(temp[1], temp[0]);
 			}
 			wordList.add(temp);
 		}
@@ -162,7 +141,6 @@ public class NPFilter {
 
 	/**
 	 * uses OpenNLP to split sentences from a String
-	 * 
 	 * @param text
 	 * @return
 	 * @throws IOException
@@ -174,7 +152,14 @@ public class NPFilter {
 		SentenceDetectorME sDetector = new SentenceDetectorME(sentenceModel);
 		return sDetector.sentDetect(text);
 	}
-
+	
+	/**
+	 * Splits words using OenNLP
+	 * @param sentence
+	 * @return
+	 * @throws InvalidFormatException
+	 * @throws IOException
+	 */
 	public static String[] WordTokenizer(String sentence)
 			throws InvalidFormatException, IOException {
 		if (tokenizerModel == null)
@@ -183,14 +168,19 @@ public class NPFilter {
 		Tokenizer tokenizer = new TokenizerME(tokenizerModel);
 		return tokenizer.tokenize(sentence);
 	}
-
+	/**
+	 * 
+	 * @param Text
+	 * @return
+	 */
 	public ArrayList<String[]> StanfordNlpTagger(String Text) {
 		if (stanfordTagger == null) {
 			stanfordTagger = new MaxentTagger(
 					"english-left3words-distsim.tagger");
 		}
 		wordList.clear();
-		Text = Text.replaceAll("\\u2010", "-");
+//		Text = Text.replaceAll("\\u2010", "-");
+		Text = Text.replaceAll("[^\\dA-Za-z ]", "");
 		String[] sentences = StanfordSentenceSplitter(Text);
 		for (String sentence : sentences) {
 			String tagged = stanfordTagger.tagString(sentence);
@@ -213,29 +203,30 @@ public class NPFilter {
 		return morph.lemma(word, tag);
 	}
 
-	// not yet working
 	public String OpenNlpLemmatize(String word, String tag) {
 		JWNLDictionary dic = null;
 		String[] lemmas = null;
-		try {
-			dic = new JWNLDictionary(
-					"C:\\Users\\Densu\\Desktop\\SimilarityUtils\\WordNet-2.0\\dict\\");
-		} catch (IOException | JWNLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (dic == null){
+			try {
+				dic = new JWNLDictionary(".\\WordNet-2.0\\dict");
+			} catch (IOException | JWNLException e) {
+				e.printStackTrace();}
 		}
-		if (dic != null) {
+		if (dic != null && !(word.matches("\\d+"))) {
 			lemmas = dic.getLemmas(tag, word);
 		}
-		return null;
+		if(lemmas != null && lemmas.length > 0 )
+			return lemmas[0];
+		else return word;
 	}
 
 	private String[] StanfordSentenceSplitter(String Text) {
-		if(props==null){
+		if (props == null) {
 			props = new Properties();
-			props.setProperty("annotators","tokenize, ssplit");
+			props.setProperty("annotators", "tokenize, ssplit");
 		}
-		if(pipe == null) pipe = new StanfordCoreNLP(props);
+		if (pipe == null)
+			pipe = new StanfordCoreNLP(props);
 
 		Annotation importedText = new Annotation(Text);
 		pipe.annotate(importedText);

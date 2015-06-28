@@ -450,7 +450,7 @@ public class MainViewController {
             @Override
             public void run() {
         		NPFilter npFilter = new NPFilter();
-        		npFilter.GetTaggedWordsFromSentence("");
+        		npFilter.OpenNlpTagger("");
         		NPFilter.stanfordTagger = new MaxentTagger("english-left3words-distsim.tagger");
         }}).start();
 

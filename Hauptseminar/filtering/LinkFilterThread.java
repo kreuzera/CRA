@@ -38,7 +38,7 @@ public class LinkFilterThread extends Thread {
 			// System.out.println(abstracts.item(i).getTextContent());
 			switch (tagger) {
 				case 0:
-					taggedWordList = npfilter.GetTaggedWordsFromSentence(abs);
+					taggedWordList = npfilter.OpenNlpTagger(abs);
 					break;
 				case 1:
 					taggedWordList = npfilter.StanfordNlpTagger(abs);
