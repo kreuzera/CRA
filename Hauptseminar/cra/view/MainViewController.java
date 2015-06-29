@@ -248,15 +248,39 @@ public class MainViewController {
 								}
 							}
 						}
+						float sum = 0f;
+						for(Element e: finalList){
+							sum += Math.pow(e.getInfluence(), 2);
+						}
+						for(Record rec: sortHelper){
+							float recSum = 0f;
+							for(Element e: rec.getProcessedNP()){
+								recSum += Math.pow(e.getInfluence(), 2);
+							}
+							float resonance = rec.getResonance();
+							resonance = resonance / (float)Math.sqrt(sum*recSum);
+							rec.setResonance(resonance);
+						}
 						sortHelper.sort(new Comparator<Record>(){
 							@Override
 							public int compare(Record arg0, Record arg1) {
+								if(Float.isNaN(arg0.getResonance()))
+									return 1;
+								if(Float.isNaN(arg1.getResonance()))
+									return -1;
 								return Float.compare(arg1.getResonance(),arg0.getResonance());
 							}
 						});
 						k=1;
 						for(Record rec: sortHelper){
-							ResonanceTableClass tempRec = new ResonanceTableClass(k, rec.getTitle(), Float.toString(rec.getResonance()), rec.getUrlID(), "");
+							String authors ="";
+							for(String s: rec.getAuthors()){
+								if(authors.length()==0)
+									authors += s;
+								else
+									authors +=", "+s;
+							}
+							ResonanceTableClass tempRec = new ResonanceTableClass(k, rec.getTitle(), Float.toString(rec.getResonance()), rec.getUrlID(), authors,rec.getAbstractText());
 							mainApp.getResonanceData().add(tempRec);
 							k++;
 						}
@@ -415,14 +439,7 @@ public class MainViewController {
 			    row.setOnMouseClicked(event -> {
 			        if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
 			        	ResonanceTableClass rowData = row.getItem();
-			        	URL url;
-						try {
-							url = new URL("http://search.ebscohost.com/login.aspx?direct=true&db=bth&AN="+rowData.getUrlID().get()+"&site=ehost-live");
-							mainApp.openWebpage(url);
-						} catch (Exception e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+			        	mainApp.showRecordDetail(rowData);
 			        }
 			    });
 			    return row ;

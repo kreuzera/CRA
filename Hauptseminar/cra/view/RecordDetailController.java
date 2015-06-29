@@ -2,8 +2,8 @@ package cra.view;
 
 import cra.model.ResonanceTableClass;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class RecordDetailController {
@@ -11,10 +11,10 @@ public class RecordDetailController {
 	private Stage dialogStage;
 	
 	@FXML
-	private Label titel;
+	private TextField titel;
 	
 	@FXML
-	private Label Authors;
+	private TextField authors;
 	
 	@FXML
 	private TextArea abstracts;
@@ -29,7 +29,9 @@ public class RecordDetailController {
 	}
 	
 	public void setRecord(ResonanceTableClass rec){
-		
+		titel.setText(rec.getTextName().get());
+		authors.setText(rec.getAuthors().get());
+		abstracts.setText(rec.getAbstracts().get());
 	}
 
 }
