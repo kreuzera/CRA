@@ -9,25 +9,27 @@ import cra.APSP.Algorithmus;
 import cra.APSP.Dijkstra;
 import cra.model.Element;
 import cra.model.PathSet;
+import cra.model.Record;
 import cra.view.MainViewController;
 import filtering.LinkFilterThread;
 
 public class CRAThread extends Thread{
 	private MainViewController controller;
-	private ConcurrentLinkedQueue<String> abstractList;
-	private ConcurrentLinkedQueue<LinkedList<Element>> targetList;
+	private ConcurrentLinkedQueue<Record> recordList;
+	private ConcurrentLinkedQueue<Record> targetList;
 	
-	public CRAThread(ConcurrentLinkedQueue<String> abstractList, MainViewController controller, ConcurrentLinkedQueue<LinkedList<Element>> targetList){
-		this.abstractList = abstractList;
-		this.controller = controller;
+	public CRAThread(ConcurrentLinkedQueue<Record> recordList, MainViewController controller, ConcurrentLinkedQueue<Record> targetList){
 		this.targetList = targetList;
+		this.recordList = recordList;
+		this.controller = controller;
 	}
 	
 	@Override
 	public void run(){
 		String abs = "";
-		while(!abstractList.isEmpty()){
-			abs = abstractList.poll();
+		while(!recordList.isEmpty()){
+			Record record = recordList.poll();
+			abs = record.getAbstractText();
 			
 			//TODO REMOVE THIS BEFORE SUBMISSION
 	//		NPFilter test = new NPFilter();
@@ -59,6 +61,7 @@ public class CRAThread extends Thread{
 				}
 				mergeList.add(mergeTarget);
 			}
+			
 	
 			switch(controller.getMeasureModel()){
 				case 0:
@@ -94,7 +97,8 @@ public class CRAThread extends Thread{
 				default:
 					break;
 			}
-			targetList.add(mergeList);
+			record.setProcessedNP(mergeList);
+			targetList.add(record);
 			controller.counter.incrementAndGet();
 		}
 	}

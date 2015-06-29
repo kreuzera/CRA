@@ -17,6 +17,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.w3c.dom.Element;
+
+import cra.model.Record;
 
 public class Reader {
 	
@@ -25,9 +28,9 @@ public class Reader {
 	 * @param url file url of abstracts
 	 * @return NodeList of Abstracts
 	 */
-	public ConcurrentLinkedQueue<String> getAbstracts(File file){
+	public ConcurrentLinkedQueue<Record> getAbstracts(File file){
 		long start = System.currentTimeMillis();
-		ConcurrentLinkedQueue<String> nodeList = null;
+		ConcurrentLinkedQueue<Record> nodeList = null;
 		if(file.getName().endsWith(".xml"))
 			nodeList = getAbstractsFromXml(file);
 		if(file.getName().endsWith(".txt"))
@@ -37,7 +40,7 @@ public class Reader {
 		return nodeList;
 	}
 	
-	private ConcurrentLinkedQueue<String> getAbstractsFromTxt(File txtFile){
+	private ConcurrentLinkedQueue<Record> getAbstractsFromTxt(File txtFile){
 		String content = null;
 		   try {
 		       FileReader reader = new FileReader(txtFile);
@@ -48,13 +51,15 @@ public class Reader {
 		   } catch (IOException e) {
 		       e.printStackTrace();
 		   }
-		ConcurrentLinkedQueue<String> absList = new ConcurrentLinkedQueue<String>();
-		absList.add(content);
+		ConcurrentLinkedQueue<Record> absList = new ConcurrentLinkedQueue<Record>();
+		Record abs = new Record();
+		abs.setAbstractText(content);
+		absList.add(abs);
 
 		return absList;
 	}
 
-	private ConcurrentLinkedQueue<String> getAbstractsFromXml(File xmlFile){
+	private ConcurrentLinkedQueue<Record> getAbstractsFromXml(File xmlFile){
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		Document doc = null;
 		DocumentBuilder db;
@@ -71,21 +76,36 @@ public class Reader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		NodeList tempList = doc.getElementsByTagName("ab");
-		HashMap<Node, String> abstractList = new HashMap<Node, String>();
-		for(int i = 0; i<tempList.getLength(); i++){
-			Node n = tempList.item(i);
-			if(abstractList.get(n.getParentNode())!=null){
-				abstractList.put(n.getParentNode(), abstractList.get(n.getParentNode())+n.getTextContent());
-			}else{
-				abstractList.put(n.getParentNode(), n.getTextContent());
-			}			
+		NodeList recordList = doc.getElementsByTagName("rec");
+		ConcurrentLinkedQueue<Record> finalList = new ConcurrentLinkedQueue<Record>();
+		for(int i = 0; i<recordList.getLength(); i++){
+			Node n = recordList.item(i);
+			if (n.getNodeType() == Node.ELEMENT_NODE) {
+				Element ele = (Element) n;
+				Record rec = new Record();
+				NodeList tempList = ele.getElementsByTagName("ab");
+				for(int j = 0; j<tempList.getLength(); j++){
+					rec.setAbstractText(rec.getAbstractText()+tempList.item(j).getTextContent());
+				}
+				tempList = ele.getElementsByTagName("jtl");
+				for(int j = 0; j<tempList.getLength(); j++){
+					rec.setJournal(tempList.item(j).getTextContent());
+				}
+				tempList = ele.getElementsByTagName("atl");
+				for(int j = 0; j<tempList.getLength(); j++){
+					rec.setTitle(tempList.item(j).getTextContent());
+				}
+				tempList = ele.getElementsByTagName("au");
+				for(int j = 0; j<tempList.getLength(); j++){
+					rec.addAuthor(tempList.item(j).getTextContent());
+				}
+				tempList = ele.getElementsByTagName("url");
+				for(int j = 0; j<tempList.getLength(); j++){
+					rec.setUrl(tempList.item(j).getTextContent());
+				}
+				finalList.add(rec);
+			}
 		}
-		ConcurrentLinkedQueue<String> finalList = new ConcurrentLinkedQueue<String>();
-		for(String s: abstractList.values()){
-			finalList.add(s);
-		}
-		
 		return finalList;
-}
+	}
 }

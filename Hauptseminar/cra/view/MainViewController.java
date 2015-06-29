@@ -14,9 +14,11 @@ import cra.CRAThread;
 import cra.MainApp;
 import cra.APSP.Algorithmus;
 import cra.APSP.Dijkstra;
+import cra.model.Record;
 import cra.model.Element;
 import cra.model.PathSet;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import fileTransfer.Reader;
 import filtering.LinkFilterThread;
 import filtering.NPFilter;
 import javafx.application.Platform;
@@ -95,6 +97,7 @@ public class MainViewController {
             mainApp.loadXml(file);
             filePath.setText(file.getAbsolutePath());
         }
+
 	}
 	
 	@FXML
@@ -111,17 +114,18 @@ public class MainViewController {
 				long algoDuration = System.currentTimeMillis();
 				textArea.setText("");
 				String print = "";
+
 				//TODO REMOVE THIS BEFORE SUBMISSION
 //				NPFilter test = new NPFilter();
 //				test.test("Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper,");
 				
-				ConcurrentLinkedQueue<String> abstracts = new ConcurrentLinkedQueue<String>();
-				abstracts = mainApp.getAbstracts();
-				if(abstracts.size()==0){
+				ConcurrentLinkedQueue<Record> recordList = new ConcurrentLinkedQueue<Record>();
+				recordList = mainApp.getAbstracts();
+				if(recordList.size()==0){
 					mainApp.loadXml(mainApp.getFile());
-					abstracts = mainApp.getAbstracts();
+					recordList = mainApp.getAbstracts();
 				}
-				int numberOfAbstract = abstracts.size();
+				int numberOfAbstract = recordList.size();
 				algoFinished = false;
 				new Thread(new Runnable() {
 		            @Override
@@ -138,10 +142,10 @@ public class MainViewController {
 		        			e.printStackTrace();
 		        		}
 		        }}).start();
-				ConcurrentLinkedQueue<LinkedList<Element>> targetList = new ConcurrentLinkedQueue<LinkedList<Element>>();
 				LinkedList<CRAThread> threadList = new LinkedList<CRAThread>();
+				ConcurrentLinkedQueue<Record> targetList = new ConcurrentLinkedQueue<Record>();
 				for(int i = 0; i< Runtime.getRuntime().availableProcessors(); i++){
-					CRAThread thread = new CRAThread(abstracts, controller, targetList);
+					CRAThread thread = new CRAThread(recordList, controller, targetList);
 					threadList.add(thread);
 					thread.start();
 				}
@@ -159,8 +163,8 @@ public class MainViewController {
 						int k = 0;
 						int count = 0;
 						LinkedList<Element> finalList = new LinkedList<Element>();
-						for(LinkedList<Element> abstr: targetList){
-							for(Element e: abstr){
+						for(Record rec: targetList){
+							for(Element e: rec.getProcessedNP()){
 								count++;
 								setStatus("Calculating average: "+count);
 								if(!finalList.contains(e))
@@ -199,8 +203,9 @@ public class MainViewController {
 					case 1:
 						finalList = new LinkedList<Element>();
 						HashMap<String, Float> avgHelper = new HashMap<String, Float>();
-						for(LinkedList<Element> abstr: targetList){
-							for(Element e: abstr){
+						for(Record abstr: targetList){
+							System.out.println(abstr.getProcessedNP().size());
+							for(Element e: abstr.getProcessedNP()){
 								if(!finalList.contains(e)){
 									finalList.add(e);
 									avgHelper.put(e.getNounPhrase(), (float)e.getNeighbour().size());

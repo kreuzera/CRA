@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import cra.model.Record;
 import cra.view.MainViewController;
 import fileTransfer.Reader;
 import javafx.application.Application;
@@ -17,7 +18,7 @@ public class MainApp extends Application {
 
     private Stage primaryStage;
     private AnchorPane rootLayout;
-    private ConcurrentLinkedQueue<String> abstracts;
+    private ConcurrentLinkedQueue<Record> abstracts;
     private File file;
         
 	@Override
@@ -76,11 +77,11 @@ public class MainApp extends Application {
 		launch(args);
 	}
 
-	public ConcurrentLinkedQueue<String> getAbstracts() {
+	public ConcurrentLinkedQueue<Record> getAbstracts() {
 		return abstracts;
 	}
 
-	public void setAbstracts(ConcurrentLinkedQueue<String> abstracts) {
+	public void setAbstracts(ConcurrentLinkedQueue<Record> abstracts) {
 		this.abstracts = abstracts;
 	}
 
