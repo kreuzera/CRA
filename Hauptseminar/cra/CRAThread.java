@@ -101,6 +101,7 @@ public class CRAThread extends Thread{
 			}
 			record.setProcessedNP(mergeList);
 			targetList.add(record);
+			controller.wordCount.addAndGet(mergeList.size());
 			controller.counter.incrementAndGet();
 		}
 	}

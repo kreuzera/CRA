@@ -90,6 +90,7 @@ public class MainViewController {
 	private MainApp mainApp;
 	
 	public AtomicInteger counter;
+	public AtomicInteger wordCount;
 	private static boolean algoFinished = false;
 	
 	
@@ -136,6 +137,7 @@ public class MainViewController {
 				analyseButton.setDisable(true);
 				
 				counter = new AtomicInteger(0);
+				wordCount = new AtomicInteger(0);
 				long algoDuration = System.currentTimeMillis();
 				String print = "";
 
@@ -156,7 +158,7 @@ public class MainViewController {
 		            public void run() {
 		        		try {
 		        			while(!algoFinished){
-		        				String status = counter.get()+"/"+numberOfAbstract+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration);
+		        				String status = "Analysing abstracts: "+Math.round(((float)counter.get()/numberOfAbstract)*100)+"% in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration);
 		        				System.out.println(status);
 		        				setStatus(status);
 		        				Thread.sleep(1000);        				
@@ -192,7 +194,7 @@ public class MainViewController {
 						for(Record rec: targetList){
 							for(Element e: rec.getProcessedNP()){
 								count++;
-								setStatus("Calculating average: "+count);
+								setStatus("Calculating average: "+Math.round(((float)count/wordCount.get())*100)+"%");
 								if(!finalList.contains(e)){
 									Element dummy = new Element(e.getNounPhrase());
 									dummy.setInfluence(e.getInfluence());
@@ -234,7 +236,10 @@ public class MainViewController {
 								break;
 						}
 						LinkedList<Record> sortHelper = new LinkedList<Record>();
+						count = 0;
 						for(Record rec: targetList){
+							count ++;
+							setStatus("Calculating Resonance: "+Math.round(((float)count/targetList.size())*100)+"%");
 							sortHelper.add(rec);
 							for(Element e: finalList){
 								for(Element re: rec.getProcessedNP()){
@@ -407,7 +412,7 @@ public class MainViewController {
 		measure.setItems(measureContent);
 		measure.getSelectionModel().selectFirst();
 		
-		IntegerSpinnerValueFactory factory = new IntegerSpinnerValueFactory(1,Integer.MAX_VALUE,50,1);
+		IntegerSpinnerValueFactory factory = new IntegerSpinnerValueFactory(1,Integer.MAX_VALUE,1000,1);
 		printQuantity.setValueFactory(factory);
 		
 		analyseButton.setOnAction(new EventHandler<ActionEvent>() {
