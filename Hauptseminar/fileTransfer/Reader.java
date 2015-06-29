@@ -103,6 +103,11 @@ public class Reader {
 				for(int j = 0; j<tempList.getLength(); j++){
 					rec.setUrl(tempList.item(j).getTextContent());
 				}
+				tempList = ele.getElementsByTagName("header");
+				for(int j = 0; j<tempList.getLength(); j++){
+					Element tempEle = (Element) tempList.item(j);
+					rec.setUrlID(tempEle.getAttribute("uiTerm"));
+				}
 				finalList.add(rec);
 			}
 		}

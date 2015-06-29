@@ -10,6 +10,7 @@ public class Record {
 	private LinkedList<String> authors = new LinkedList<String>();
 	private LinkedList<Element> processedNP;
 	private float resonance = 0f;
+	private String urlID = "";
 	
 	public String getTitle() {
 		return title;
@@ -56,6 +57,12 @@ public class Record {
 	}
 	public void setResonance(float resonance) {
 		this.resonance = resonance;
+	}
+	public String getUrlID() {
+		return urlID;
+	}
+	public void setUrlID(String urlID) {
+		this.urlID = urlID;
 	}
 	
 

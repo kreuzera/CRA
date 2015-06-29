@@ -1,7 +1,11 @@
 package cra;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import cra.model.Element;
@@ -9,6 +13,7 @@ import cra.model.NounTableClass;
 import cra.model.Record;
 import cra.model.ResonanceTableClass;
 import cra.view.MainViewController;
+import cra.view.RecordDetailController;
 import fileTransfer.Reader;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -17,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -74,6 +80,48 @@ public class MainApp extends Application {
     public void loadXml(File xmlFile){
 		Reader fileReader = new Reader();
     	setAbstracts(fileReader.getAbstracts(xmlFile));
+    }
+    
+    private static void openWebpages(URI uri) {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void openWebpage(URL url) {
+        try {
+            openWebpages(url.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void showRecordDetail(ResonanceTableClass res){
+        // Load the fxml file and create a new stage for the popup dialog.
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MainApp.class.getResource("view/RecordDetail.fxml"));
+        AnchorPane page = (AnchorPane) loader.load();
+
+        // Create the dialog Stage.
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle("Edit Person");
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.initOwner(primaryStage);
+        Scene scene = new Scene(page);
+        dialogStage.setScene(scene);
+
+        // Set the person into the controller.
+        RecordDetailController controller = loader.getController();
+        controller.setDialogStage(dialogStage);
+//        controller.setPerson(person);
+
+        // Show the dialog and wait until the user closes it
+        dialogStage.showAndWait();
     }
     
     public Stage getPrimaryStage(){

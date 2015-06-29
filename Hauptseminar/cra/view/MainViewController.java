@@ -1,6 +1,8 @@
 package cra.view;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URL;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +40,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
@@ -179,6 +182,8 @@ public class MainViewController {
 					}
 				}
 				algoFinished = true;
+				String status = counter.get()+"/"+numberOfAbstract+" in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration);
+				System.out.println(status);
 				switch(measure.getSelectionModel().getSelectedIndex()){
 					case 0:
 						int k = 0;
@@ -251,7 +256,7 @@ public class MainViewController {
 						});
 						k=1;
 						for(Record rec: sortHelper){
-							ResonanceTableClass tempRec = new ResonanceTableClass(k, rec.getTitle(), Float.toString(rec.getResonance()));
+							ResonanceTableClass tempRec = new ResonanceTableClass(k, rec.getTitle(), Float.toString(rec.getResonance()), rec.getUrlID(), "");
 							mainApp.getResonanceData().add(tempRec);
 							k++;
 						}
@@ -289,7 +294,7 @@ public class MainViewController {
 						});
 						k = 1;
 						for(Element e: finalList){
-							print += k+". "+e.getNounPhrase()+": "+avgHelper.get(e.getNounPhrase())+"\n";							
+							print += k+". "+e.getNounPhrase()+": "+avgHelper.get(e.getNounPhrase())+"\n";	
 							NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(avgHelper.get(e.getNounPhrase())));
 							mainApp.getNounData().add(listItem);
 							k++;
@@ -405,7 +410,23 @@ public class MainViewController {
 		resonancenTextNameColumn.setCellValueFactory(cellData -> cellData.getValue().getTextName());
 		resonancenResonanceColumn.setCellValueFactory(cellData -> cellData.getValue().getResonance());
 		
-		
+		resonanceTable.setRowFactory( tv -> {
+			    TableRow<ResonanceTableClass> row = new TableRow<>();
+			    row.setOnMouseClicked(event -> {
+			        if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+			        	ResonanceTableClass rowData = row.getItem();
+			        	URL url;
+						try {
+							url = new URL("http://search.ebscohost.com/login.aspx?direct=true&db=bth&AN="+rowData.getUrlID().get()+"&site=ehost-live");
+							mainApp.openWebpage(url);
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			        }
+			    });
+			    return row ;
+			});
 		
 //		IntegerSpinnerValueFactory spinnerfactory = new IntegerSpinnerValueFactory(1,Integer.MAX_VALUE, 30, 1);
 		
