@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane minHeight="225.0" prefHeight="430.0" prefWidth="533.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cra.view.MainViewController">
+<AnchorPane minHeight="225.0" prefHeight="510.0" prefWidth="856.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cra.view.MainViewController">
    <children>
       <Label fx:id="filePath" layoutX="10.0" layoutY="14.0" text="Please select file..." AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="14.0" />
       <Button layoutX="518.0" layoutY="6.0" mnemonicParsing="false" onAction="#handleBrowse" text="Browse..." AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
@@ -19,8 +20,37 @@
       <Spinner fx:id="printQuantity" editable="true" layoutX="294.0" layoutY="125.0" prefHeight="25.0" prefWidth="211.0" AnchorPane.rightAnchor="10.0" />
       <Label layoutX="10.0" layoutY="129.0" text="Number of Results to print" AnchorPane.leftAnchor="10.0" />
       <Separator layoutX="14.0" layoutY="195.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
-      <TextArea fx:id="textArea" layoutX="14.0" layoutY="198.0" prefHeight="192.0" prefWidth="513.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="204.0" />
       <Button layoutX="387.0" layoutY="163.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" text="Cancel" AnchorPane.rightAnchor="84.0" />
       <Label fx:id="statusLabel" layoutY="167.0" prefHeight="17.0" prefWidth="376.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="157.0" AnchorPane.topAnchor="167.0" />
+      <AnchorPane layoutX="-43.0" layoutY="163.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="197.0">
+         <children>
+            <SplitPane dividerPositions="0.32038834951456313" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+              <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                     <children>
+                        <TableView fx:id="influenceTable" layoutX="20.0" layoutY="6.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn fx:id="influencePositionColumn" prefWidth="32.0" text="#" />
+                            <TableColumn fx:id="influenceNounPhraseColumn" prefWidth="125.0" text="Noun Phrase" />
+                              <TableColumn fx:id="influenceAverageColumn" prefWidth="101.0" text="Average" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                     <children>
+                        <TableView fx:id="resonanceTable" layoutX="49.0" layoutY="-22.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn fx:id="resonancePositionColumn" prefWidth="52.0" text="#" />
+                              <TableColumn fx:id="resonancenResonanceColumn" prefWidth="75.0" text="Resonance" />
+                            <TableColumn fx:id="resonancenTextNameColumn" prefWidth="264.0" text="Text" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+              </items>
+            </SplitPane>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

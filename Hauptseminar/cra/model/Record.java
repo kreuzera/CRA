@@ -9,6 +9,7 @@ public class Record {
 	private String abstractText = "";
 	private LinkedList<String> authors = new LinkedList<String>();
 	private LinkedList<Element> processedNP;
+	private float resonance = 0f;
 	
 	public String getTitle() {
 		return title;
@@ -49,6 +50,12 @@ public class Record {
 	}
 	public void setProcessedNP(LinkedList<Element> processedNP) {
 		this.processedNP = processedNP;
+	}
+	public float getResonance() {
+		return resonance;
+	}
+	public void setResonance(float resonance) {
+		this.resonance = resonance;
 	}
 	
 

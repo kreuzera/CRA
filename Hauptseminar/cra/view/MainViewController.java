@@ -14,9 +14,11 @@ import cra.CRAThread;
 import cra.MainApp;
 import cra.APSP.Algorithmus;
 import cra.APSP.Dijkstra;
+import cra.model.NounTableClass;
 import cra.model.Record;
 import cra.model.Element;
 import cra.model.PathSet;
+import cra.model.ResonanceTableClass;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fileTransfer.Reader;
 import filtering.LinkFilterThread;
@@ -35,6 +37,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 
@@ -61,8 +65,24 @@ public class MainViewController {
 	@FXML
 	private Spinner<Integer> printQuantity;
 	
-	@FXML
-	private TextArea textArea;
+	
+    @FXML
+    private TableView<NounTableClass> influenceTable;
+    @FXML
+    private TableColumn<NounTableClass, String> influencePositionColumn;
+    @FXML
+    private TableColumn<NounTableClass, String> influenceNounPhraseColumn;
+    @FXML
+    private TableColumn<NounTableClass, String> influenceAverageColumn;
+    
+    @FXML
+    private TableView<ResonanceTableClass> resonanceTable;
+    @FXML
+    private TableColumn<ResonanceTableClass, String> resonancePositionColumn;
+    @FXML
+    private TableColumn<ResonanceTableClass, String> resonancenTextNameColumn;
+    @FXML
+    private TableColumn<ResonanceTableClass, String> resonancenResonanceColumn;
 	
 	private MainApp mainApp;
 	
@@ -104,6 +124,8 @@ public class MainViewController {
 	private void handleAnalyse(){
 		MainViewController controller = this;
 		LinkFilterThread.resetTagTime();
+		mainApp.getNounData().clear();
+		mainApp.getResonanceData().clear();
 		Thread m = new Thread(new Runnable(){
 
 			@Override
@@ -112,7 +134,6 @@ public class MainViewController {
 				
 				counter = new AtomicInteger(0);
 				long algoDuration = System.currentTimeMillis();
-				textArea.setText("");
 				String print = "";
 
 				//TODO REMOVE THIS BEFORE SUBMISSION
@@ -167,9 +188,11 @@ public class MainViewController {
 							for(Element e: rec.getProcessedNP()){
 								count++;
 								setStatus("Calculating average: "+count);
-								if(!finalList.contains(e))
+								if(!finalList.contains(e)){
+									Element dummy = new Element(e.getNounPhrase());
+									dummy.setInfluence(e.getInfluence());
 									finalList.add(e);
-								else{
+								}else{
 									Element temp = null;
 									for(Element f: finalList){
 										if(f.equals(e))
@@ -188,17 +211,51 @@ public class MainViewController {
 						}
 						finalList.sort(new Comparator<Element>(){
 							@Override
-							public int compare(Element o1, Element o2) {								
+							public int compare(Element o1, Element o2) {
+								if(Float.isNaN(o1.getInfluence()))
+									return 1;
+								if(Float.isNaN(o2.getInfluence()))
+									return -1;
 								return Float.compare(o2.getInfluence(),o1.getInfluence());
 							}
 						});
 						k = 1;
 						for(Element e: finalList){
 							print += k+". "+e.getNounPhrase()+": "+e.getInfluence()+"\n";
+							NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(e.getInfluence()));
+							mainApp.getNounData().add(listItem);
 							k++;
 							if(k>printQuantity.getValue())
 								break;
 						}
+						LinkedList<Record> sortHelper = new LinkedList<Record>();
+						for(Record rec: targetList){
+							sortHelper.add(rec);
+							for(Element e: finalList){
+								for(Element re: rec.getProcessedNP()){
+									if(e.equals(re)){
+										if(!Float.isNaN(re.getInfluence())&&!Float.isNaN(e.getInfluence())){
+											float resonance = rec.getResonance();
+											resonance += e.getInfluence()*re.getInfluence();
+											rec.setResonance(resonance);
+										}
+									}
+								}
+							}
+						}
+						sortHelper.sort(new Comparator<Record>(){
+							@Override
+							public int compare(Record arg0, Record arg1) {
+								return Float.compare(arg1.getResonance(),arg0.getResonance());
+							}
+						});
+						k=1;
+						for(Record rec: sortHelper){
+							ResonanceTableClass tempRec = new ResonanceTableClass(k, rec.getTitle(), Float.toString(rec.getResonance()));
+							mainApp.getResonanceData().add(tempRec);
+							k++;
+						}
+						
 						break;
 					case 1:
 						finalList = new LinkedList<Element>();
@@ -232,17 +289,20 @@ public class MainViewController {
 						});
 						k = 1;
 						for(Element e: finalList){
-							print += k+". "+e.getNounPhrase()+": "+avgHelper.get(e.getNounPhrase())+"\n";
+							print += k+". "+e.getNounPhrase()+": "+avgHelper.get(e.getNounPhrase())+"\n";							
+							NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(avgHelper.get(e.getNounPhrase())));
+							mainApp.getNounData().add(listItem);
 							k++;
 							if(k>printQuantity.getValue())
 								break;
 						}
+						
+						
 						break;
 
 				}
 				
 				
-				textArea.setText(print);
 				System.out.println(print);
 				setStatus(numberOfAbstract+" abstracts analyzed in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
 				System.out.println(numberOfAbstract+" abstracts analyzed in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
@@ -337,7 +397,15 @@ public class MainViewController {
 		    }
 		});
 		
-		textArea.setEditable(false);
+		influencePositionColumn.setCellValueFactory(cellData -> cellData.getValue().getPosition());
+		influenceNounPhraseColumn.setCellValueFactory(cellData -> cellData.getValue().getNounPhrase());
+		influenceAverageColumn.setCellValueFactory(cellData -> cellData.getValue().getAverage());
+		
+		resonancePositionColumn.setCellValueFactory(cellData -> cellData.getValue().getPosition());
+		resonancenTextNameColumn.setCellValueFactory(cellData -> cellData.getValue().getTextName());
+		resonancenResonanceColumn.setCellValueFactory(cellData -> cellData.getValue().getResonance());
+		
+		
 		
 //		IntegerSpinnerValueFactory spinnerfactory = new IntegerSpinnerValueFactory(1,Integer.MAX_VALUE, 30, 1);
 		
@@ -366,6 +434,8 @@ public class MainViewController {
 
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
+		influenceTable.setItems(mainApp.getNounData());
+		resonanceTable.setItems(mainApp.getResonanceData());
 	}
 
 }

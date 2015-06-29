@@ -4,10 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import cra.model.Element;
+import cra.model.NounTableClass;
 import cra.model.Record;
+import cra.model.ResonanceTableClass;
 import cra.view.MainViewController;
 import fileTransfer.Reader;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -20,6 +25,8 @@ public class MainApp extends Application {
     private AnchorPane rootLayout;
     private ConcurrentLinkedQueue<Record> abstracts;
     private File file;
+    private ObservableList<NounTableClass> nounData = FXCollections.observableArrayList();
+    private ObservableList<ResonanceTableClass> resonanceData = FXCollections.observableArrayList();
         
 	@Override
 	public void start(Stage primaryStage) {
@@ -92,4 +99,22 @@ public class MainApp extends Application {
 	public void setFile(File file) {
 		this.file = file;
 	}
+
+	public ObservableList<NounTableClass> getNounData() {
+		return nounData;
+	}
+
+	public void setNounData(ObservableList<NounTableClass> nounData) {
+		this.nounData = nounData;
+	}
+
+	public ObservableList<ResonanceTableClass> getResonanceData() {
+		return resonanceData;
+	}
+
+	public void setResonanceData(ObservableList<ResonanceTableClass> resonanceData) {
+		this.resonanceData = resonanceData;
+	}
+
+
 }
