@@ -217,10 +217,10 @@ public class MainViewController {
 						finalList.sort(new Comparator<Element>(){
 							@Override
 							public int compare(Element o1, Element o2) {
-								if(Float.isNaN(o1.getInfluence()))
-									return 1;
-								if(Float.isNaN(o2.getInfluence()))
-									return -1;
+//								if(Float.isNaN(o1.getInfluence()))
+//									return 1;
+//								if(Float.isNaN(o2.getInfluence()))
+//									return -1;
 								return Float.compare(o2.getInfluence(),o1.getInfluence());
 							}
 						});
@@ -257,17 +257,19 @@ public class MainViewController {
 							for(Element e: rec.getProcessedNP()){
 								recSum += Math.pow(e.getInfluence(), 2);
 							}
-							float resonance = rec.getResonance();
-							resonance = resonance / (float)Math.sqrt(sum*recSum);
-							rec.setResonance(resonance);
+							if(((float)Math.sqrt(sum*recSum))>0){
+								float resonance = rec.getResonance();
+								resonance = resonance / (float)Math.sqrt(sum*recSum);
+								rec.setResonance(resonance);
+							}
 						}
 						sortHelper.sort(new Comparator<Record>(){
 							@Override
 							public int compare(Record arg0, Record arg1) {
-								if(Float.isNaN(arg0.getResonance()))
-									return 1;
-								if(Float.isNaN(arg1.getResonance()))
-									return -1;
+//								if(Float.isNaN(arg0.getResonance()))
+//									return 1;
+//								if(Float.isNaN(arg1.getResonance()))
+//									return -1;
 								return Float.compare(arg1.getResonance(),arg0.getResonance());
 							}
 						});
