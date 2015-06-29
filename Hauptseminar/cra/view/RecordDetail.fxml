@@ -23,8 +23,9 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <TextArea fx:id="abstracts" editable="false" layoutX="10.0" layoutY="132.0" prefHeight="232.0" prefWidth="660.0" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="132.0" />
+      <TextArea fx:id="abstracts" editable="false" layoutX="10.0" layoutY="132.0" prefHeight="201.0" prefWidth="660.0" wrapText="true" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="132.0" />
       <TextField fx:id="titel" editable="false" layoutX="10.0" layoutY="27.0" prefHeight="25.0" prefWidth="586.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="27.0" />
       <TextField fx:id="authors" editable="false" layoutX="10.0" layoutY="78.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="78.0" />
+      <Button layoutX="614.0" layoutY="335.0" mnemonicParsing="false" onAction="#handleOpenBrowser" text="Open in Browser" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>

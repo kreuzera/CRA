@@ -11,6 +11,7 @@ public class Record {
 	private LinkedList<Element> processedNP;
 	private float resonance = 0f;
 	private String urlID = "";
+	private String db = "";
 	
 	public String getTitle() {
 		return title;
@@ -63,6 +64,12 @@ public class Record {
 	}
 	public void setUrlID(String urlID) {
 		this.urlID = urlID;
+	}
+	public String getDb() {
+		return db;
+	}
+	public void setDb(String db) {
+		this.db = db;
 	}
 	
 

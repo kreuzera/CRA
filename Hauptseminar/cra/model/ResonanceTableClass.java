@@ -10,14 +10,16 @@ public class ResonanceTableClass {
 	private final StringProperty urlID;
 	private final StringProperty authors;
 	private final StringProperty abstracts;
+	private final StringProperty dbID;
 	
-	public ResonanceTableClass(int position, String textName, String resonance, String urlID, String authors, String abstracts){
+	public ResonanceTableClass(int position, String textName, String resonance, String urlID, String dbID, String authors, String abstracts){
 		this.position = new SimpleStringProperty(Integer.toString(position));
 		this.resonance = new SimpleStringProperty(resonance);
 		this.textName = new SimpleStringProperty(textName);
 		this.urlID = new SimpleStringProperty(urlID);
 		this.authors = new SimpleStringProperty(authors);
 		this.abstracts = new SimpleStringProperty(abstracts);
+		this.dbID = new SimpleStringProperty(dbID);
 	}
 
 	public StringProperty getPosition() {
@@ -42,6 +44,10 @@ public class ResonanceTableClass {
 
 	public StringProperty getAbstracts() {
 		return abstracts;
+	}
+
+	public StringProperty getDbID() {
+		return dbID;
 	}
 	
 }

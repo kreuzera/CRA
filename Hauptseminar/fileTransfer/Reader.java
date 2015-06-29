@@ -107,6 +107,7 @@ public class Reader {
 				for(int j = 0; j<tempList.getLength(); j++){
 					Element tempEle = (Element) tempList.item(j);
 					rec.setUrlID(tempEle.getAttribute("uiTerm"));
+					rec.setDb(tempEle.getAttribute("shortDbName"));
 				}
 				finalList.add(rec);
 			}

@@ -287,7 +287,7 @@ public class MainViewController {
 								else
 									authors +=", "+s;
 							}
-							ResonanceTableClass tempRec = new ResonanceTableClass(k, rec.getTitle(), Float.toString(rec.getResonance()), rec.getUrlID(), authors,rec.getAbstractText());
+							ResonanceTableClass tempRec = new ResonanceTableClass(k, rec.getTitle(), Float.toString(rec.getResonance()), rec.getUrlID(), rec.getDb(), authors,rec.getAbstractText());
 							mainApp.getResonanceData().add(tempRec);
 							k++;
 						}

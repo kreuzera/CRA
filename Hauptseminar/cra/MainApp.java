@@ -82,7 +82,7 @@ public class MainApp extends Application {
     	setAbstracts(fileReader.getAbstracts(xmlFile));
     }
     
-    private static void openWebpages(URI uri) {
+    private void openWebpages(URI uri) {
         Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
         if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
@@ -93,7 +93,7 @@ public class MainApp extends Application {
         }
     }
 
-    public static void openWebpage(URL url) {
+    public void openWebpage(URL url) {
         try {
             openWebpages(url.toURI());
         } catch (URISyntaxException e) {
@@ -120,6 +120,7 @@ public class MainApp extends Application {
 	        RecordDetailController controller = loader.getController();
 	        controller.setDialogStage(dialogStage);
 	        controller.setRecord(res);
+	        controller.setMainApp(this);
 	
 	        // Show the dialog and wait until the user closes it
 	        dialogStage.showAndWait();

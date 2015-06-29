@@ -43,7 +43,7 @@
                           <columns>
                             <TableColumn fx:id="resonancePositionColumn" prefWidth="52.0" text="#" />
                               <TableColumn fx:id="resonancenResonanceColumn" prefWidth="75.0" text="Resonance" />
-                            <TableColumn fx:id="resonancenTextNameColumn" prefWidth="264.0" text="Text" />
+                            <TableColumn fx:id="resonancenTextNameColumn" prefWidth="427.0" text="Text" />
                           </columns>
                         </TableView>
                      </children>
