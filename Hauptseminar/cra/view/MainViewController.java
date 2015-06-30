@@ -91,6 +91,7 @@ public class MainViewController {
 	
 	public AtomicInteger counter;
 	public AtomicInteger wordCount;
+	public AtomicInteger beforeMergeCount;
 	private static boolean algoFinished = false;
 	
 	
@@ -138,6 +139,7 @@ public class MainViewController {
 				
 				counter = new AtomicInteger(0);
 				wordCount = new AtomicInteger(0);
+				beforeMergeCount = new AtomicInteger(0);
 				long algoDuration = System.currentTimeMillis();
 				String print = "";
 
@@ -342,7 +344,7 @@ public class MainViewController {
 				System.out.println(print);
 				setStatus(numberOfAbstract+" abstracts analyzed in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
 				System.out.println(numberOfAbstract+" abstracts analyzed in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
-				System.out.println("Total time to tag all words: "+LinkFilterThread.getTotalTagTime()+"ms split across "+Runtime.getRuntime().availableProcessors()+" Threads equals "+(LinkFilterThread.getTotalTagTime()/Runtime.getRuntime().availableProcessors())+"ms per Thread on average");
+				System.out.println("Total time to tag "+beforeMergeCount.get()+" words: "+LinkFilterThread.getTotalTagTime()+"ms split across "+Runtime.getRuntime().availableProcessors()+" Threads equals "+(LinkFilterThread.getTotalTagTime()/Runtime.getRuntime().availableProcessors())+"ms per Thread on average.\nAfter Merge for each individual abstract there were "+wordCount.get()+" words in total left.");
 				analyseButton.setDisable(false);
 			}
 			

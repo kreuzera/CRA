@@ -52,17 +52,16 @@ public class CRAThread extends Thread{
 				for(Element e: eList){
 					i++;
 					for(Element n: e.getNeighbour()){
-	
 						if(!mergeTarget.getNeighbour().contains(n))
 							mergeTarget.addNeighbour(n);
-							n.getNeighbour().remove(e);
-							n.addNeighbour(mergeTarget);
+						n.getNeighbour().remove(e);
+						n.addNeighbour(mergeTarget);
 					}					
 				}
 				mergeList.add(mergeTarget);
 			}
+			controller.beforeMergeCount.addAndGet(i);
 			
-	
 			switch(controller.getMeasureModel()){
 				case 0:
 					ConcurrentLinkedQueue<Element> eList = new ConcurrentLinkedQueue<Element>();
