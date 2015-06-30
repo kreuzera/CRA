@@ -96,6 +96,7 @@ public class MainViewController {
 	public AtomicInteger wordCount;
 	public AtomicInteger beforeMergeCount;
 	private static boolean algoFinished = false;
+	private static int sizeAfterMerge = 0;
 	
 	
 	
@@ -134,8 +135,9 @@ public class MainViewController {
 		LinkFilterThread.resetTagTime();
 		mainApp.getNounData().clear();
 		mainApp.getResonanceData().clear();
+		
 		Thread m = new Thread(new Runnable(){
-
+	
 			@Override
 			public void run() {
 				analyseButton.setDisable(true);
@@ -299,7 +301,7 @@ public class MainViewController {
 							mainApp.getResonanceData().add(tempRec);
 							k++;
 						}
-						
+						sizeAfterMerge = finalList.size();
 						break;
 					case 1:
 						finalList = new LinkedList<Element>();
@@ -339,7 +341,7 @@ public class MainViewController {
 							if(k>printQuantity.getValue())
 								break;
 						}
-						
+						sizeAfterMerge = finalList.size();
 						
 						break;
 
@@ -350,6 +352,7 @@ public class MainViewController {
 				setStatus(numberOfAbstract+" abstracts analyzed in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
 				System.out.println(numberOfAbstract+" abstracts analyzed in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
 				System.out.println("Total time to tag "+beforeMergeCount.get()+" words: "+LinkFilterThread.getTotalTagTime()+"ms split across "+Runtime.getRuntime().availableProcessors()+" Threads equals "+(LinkFilterThread.getTotalTagTime()/Runtime.getRuntime().availableProcessors())+"ms per Thread on average.\nAfter Merge for each individual abstract there were "+wordCount.get()+" words in total left.");
+				System.out.println("Total number of words after merge of all abstracts: "+sizeAfterMerge);
 				analyseButton.setDisable(false);
 			}
 			
