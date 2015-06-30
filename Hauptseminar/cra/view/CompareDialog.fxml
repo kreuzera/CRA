@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="498.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cra.view.CompareDialogController">
+   <children>
+      <TextArea fx:id="text1" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="418.0" wrapText="true" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="455.0" AnchorPane.topAnchor="10.0" />
+      <TextArea fx:id="text2" layoutX="477.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.leftAnchor="455.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <TableView fx:id="influenceTable1" layoutX="10.0" layoutY="247.0" prefHeight="241.0" prefWidth="435.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="455.0" AnchorPane.topAnchor="247.0">
+        <columns>
+          <TableColumn fx:id="influencePositionColumn1" prefWidth="40.0" text="#" />
+          <TableColumn fx:id="influenceNounPhraseColumn1" prefWidth="271.0" text="Noun Phrase" />
+            <TableColumn fx:id="influenceAverageColumn1" minWidth="0.0" prefWidth="122.0" text="Average" />
+        </columns>
+      </TableView>
+      <TableView fx:id="influenceTable2" layoutX="20.0" layoutY="257.0" prefHeight="241.0" prefWidth="435.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="455.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="247.0">
+         <columns>
+            <TableColumn fx:id="influencePositionColumn2" prefWidth="40.0" text="#" />
+            <TableColumn fx:id="influenceNounPhraseColumn2" prefWidth="271.0" text="Noun Phrase" />
+            <TableColumn fx:id="influenceAverageColumn2" minWidth="0.0" prefWidth="122.0" text="Average" />
+         </columns>
+      </TableView>
+      <Button layoutX="795.0" layoutY="210.0" mnemonicParsing="false" onAction="#handleCompare" text="Compare" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="215.0" />
+      <Label layoutX="14.0" layoutY="214.0" text="Resonance: " AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="218.0" />
+      <TextField fx:id="resonanceTextField" editable="false" layoutX="77.0" layoutY="215.0" prefHeight="25.0" prefWidth="368.0" AnchorPane.leftAnchor="77.0" AnchorPane.topAnchor="215.0" />
+   </children>
+</AnchorPane>

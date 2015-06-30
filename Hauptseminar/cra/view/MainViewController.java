@@ -248,36 +248,27 @@ public class MainViewController {
 							count ++;
 							setStatus("Calculating Resonance: "+Math.round(((float)count/targetList.size())*100)+"%");
 							sortHelper.add(rec);
-							for(Element e: finalList){
-								for(Element re: rec.getProcessedNP()){
-									if(e.equals(re)){
-										if(!Float.isNaN(re.getInfluence())&&!Float.isNaN(e.getInfluence())){
-											float resonance = rec.getResonance();
-											resonance += e.getInfluence()*re.getInfluence();
-											rec.setResonance(resonance);
-										}
-									}
-								}
-							}
+							float resonance = mainApp.getResonance(rec.getProcessedNP(), finalList, weightedResonance.isSelected());
+							rec.setResonance(resonance);
 						}
 						// Weighted Resonance
-						if(weightedResonance.isSelected()){
-							float sum = 0f;
-							for(Element e: finalList){
-								sum += Math.pow(e.getInfluence(), 2);
-							}
-							for(Record rec: sortHelper){
-								float recSum = 0f;
-								for(Element e: rec.getProcessedNP()){
-									recSum += Math.pow(e.getInfluence(), 2);
-								}
-								if(((float)Math.sqrt(sum*recSum))>0){
-									float resonance = rec.getResonance();
-									resonance = resonance / (float)Math.sqrt(sum*recSum);
-									rec.setResonance(resonance);
-								}
-							}
-						}
+//						if(weightedResonance.isSelected()){
+//							float sum = 0f;
+//							for(Element e: finalList){
+//								sum += Math.pow(e.getInfluence(), 2);
+//							}
+//							for(Record rec: sortHelper){
+//								float recSum = 0f;
+//								for(Element e: rec.getProcessedNP()){
+//									recSum += Math.pow(e.getInfluence(), 2);
+//								}
+//								if(((float)Math.sqrt(sum*recSum))>0){
+//									float resonance = rec.getResonance();
+//									resonance = resonance / (float)Math.sqrt(sum*recSum);
+//									rec.setResonance(resonance);
+//								}
+//							}
+//						}
 						sortHelper.sort(new Comparator<Record>(){
 							@Override
 							public int compare(Record arg0, Record arg1) {
@@ -358,6 +349,11 @@ public class MainViewController {
 			
 		});
 		m.start();
+	}
+	
+	@FXML
+	private void showCompareDialog(){
+		mainApp.showCompareDialog();
 	}
 	
 	@FXML

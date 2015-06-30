@@ -6,12 +6,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import cra.model.Element;
 import cra.model.NounTableClass;
 import cra.model.Record;
 import cra.model.ResonanceTableClass;
+import cra.view.CompareDialogController;
 import cra.view.MainViewController;
 import cra.view.RecordDetailController;
 import fileTransfer.Reader;
@@ -106,6 +108,32 @@ public class MainApp extends Application {
         }
     }
     
+    public float getResonance(LinkedList<Element> text1, LinkedList<Element> text2, boolean weighted){
+    	float resonance = 0;
+		for(Element e1: text1){
+			for(Element e2: text2){
+				if(e1.equals(e2)){
+						resonance += e1.getInfluence()*e2.getInfluence();
+				}
+			}
+		}
+		if(weighted){
+			float sum1 = 0f;
+			for(Element e: text1){
+				sum1 += Math.pow(e.getInfluence(), 2);
+			}
+			float sum2 = 0f;
+			for(Element e: text2){
+				sum2 += Math.pow(e.getInfluence(), 2);
+			}
+			if(((float)Math.sqrt(sum1*sum2))>0){
+				resonance = resonance / (float)Math.sqrt(sum1*sum2);
+			}
+
+		}
+		return resonance;
+    }
+    
     public void showRecordDetail(ResonanceTableClass res){
     	try {
 	        // Load the fxml file and create a new stage for the popup dialog.
@@ -126,6 +154,34 @@ public class MainApp extends Application {
 	        controller.setDialogStage(dialogStage);
 	        controller.setRecord(res);
 	        controller.setMainApp(this);
+	
+	        // Show the dialog and wait until the user closes it
+	        dialogStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void showCompareDialog(){
+    	try {
+	        // Load the fxml file and create a new stage for the popup dialog.
+	        FXMLLoader loader = new FXMLLoader();
+	        loader.setLocation(MainApp.class.getResource("view/CompareDialog.fxml"));
+	        AnchorPane page = (AnchorPane) loader.load();
+	
+	        // Create the dialog Stage.
+	        Stage dialogStage = new Stage();
+	        dialogStage.setTitle("Comparison Tool");
+	        dialogStage.initModality(Modality.WINDOW_MODAL);
+	        dialogStage.initOwner(primaryStage);
+	        Scene scene = new Scene(page);
+	        dialogStage.setScene(scene);
+	
+	        // Set the person into the controller.
+	        CompareDialogController controller = loader.getController();
+	        controller.setDialogStage(dialogStage);
+	        controller.setMainApp(this);
+	        controller.setMainViewController(mainViewController);
 	
 	        // Show the dialog and wait until the user closes it
 	        dialogStage.showAndWait();

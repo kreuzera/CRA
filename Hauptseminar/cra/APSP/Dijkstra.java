@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import cra.model.Element;
 import cra.model.PathSet;
@@ -15,6 +16,7 @@ public class Dijkstra extends Thread{
 	private HashMap<Element, LinkedList<Element>> parentList;
 	private ConcurrentLinkedQueue<Element> listOfNodes;
 	private MainViewController controller;
+	private static AtomicInteger count;
 	
 	public Dijkstra(ConcurrentLinkedQueue<Element> listOfNodes, MainViewController controller){
 		this.listOfNodes = listOfNodes;
@@ -23,7 +25,11 @@ public class Dijkstra extends Thread{
 	
 	@Override
 	public void run(){
+		count = new AtomicInteger(0);
+		int totalCount = listOfNodes.size();
 		while(!listOfNodes.isEmpty()&&!this.isInterrupted()){
+			System.out.println(count.get()+"/"+totalCount);
+			count.incrementAndGet();
 			Element e = listOfNodes.poll();
 			computePaths(e);
 		}

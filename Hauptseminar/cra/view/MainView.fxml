@@ -54,5 +54,6 @@
       </AnchorPane>
       <CheckBox fx:id="weightedResonance" layoutX="15.0" layoutY="161.0" mnemonicParsing="false" selected="true" text="Calculate weighted resonance" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="161.0" />
       <Separator layoutX="10.0" layoutY="479.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="479.0" />
+      <Button layoutX="794.0" layoutY="482.0" mnemonicParsing="false" onAction="#showCompareDialog" text="Open Comparision Tool" AnchorPane.bottomAnchor="3.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>
