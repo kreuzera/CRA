@@ -1,5 +1,6 @@
 package cra.view;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 
 
@@ -86,6 +87,15 @@ public class CompareDialogController {
 			public void run() {
 				LinkedList<Element> influence1 = craThread.getInfluences(textString1);
 				LinkedList<Element> influence2 = craThread.getInfluences(textString2);
+				Comparator<Element> comparator = new Comparator<Element>(){
+					@Override
+					public int compare(Element arg0, Element arg1) {
+						return Float.compare(arg1.getInfluence(), arg0.getInfluence());
+					}
+					
+				};
+				influence1.sort(comparator);
+				influence2.sort(comparator);
 				int k = 1;
 				for(Element e: influence1){
 					NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(e.getInfluence()));
@@ -125,12 +135,9 @@ public class CompareDialogController {
 	
 	public void setStatus(String text){
 	     Platform.runLater(new Runnable() {
-	         @Override public void run() {
-	        	 if(text1.getText().length()>0&&text2.getText().length()>0){
-	        		 statusLabel.setText(text);
-	        	 }else{
-	        		 showError();
-	        	 }
+	         @Override 
+	         public void run() {
+        		 statusLabel.setText(text);
 	         }
 	       });
 	}
@@ -153,7 +160,11 @@ public class CompareDialogController {
 		
 		compareButton.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
-		    	handleCompare();
+		    	if(text1.getText().length()>0&&text2.getText().length()>0){
+		    		handleCompare();
+		    	}else{
+		    		showError();
+		    	}
 		    }
 		});
 	}
