@@ -1,28 +1,20 @@
 package cra.view;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URL;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import cra.CRAThread;
 import cra.MainApp;
-import cra.APSP.Algorithmus;
-import cra.APSP.Dijkstra;
 import cra.model.NounTableClass;
 import cra.model.Record;
 import cra.model.Element;
-import cra.model.PathSet;
 import cra.model.ResonanceTableClass;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import fileTransfer.Reader;
 import filtering.LinkFilterThread;
 import filtering.NPFilter;
 import javafx.application.Platform;
@@ -42,7 +34,6 @@ import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 
 public class MainViewController {
@@ -148,10 +139,6 @@ public class MainViewController {
 				long algoDuration = System.currentTimeMillis();
 				String print = "";
 
-				//TODO REMOVE THIS BEFORE SUBMISSION
-//				NPFilter test = new NPFilter();
-//				test.test("Half an ancient silver fifty cent piece, several quotations from John Donne's sermons written incorrectly, each on a separate piece of transparent tissue-thin paper,");
-				
 				ConcurrentLinkedQueue<Record> recordList = new ConcurrentLinkedQueue<Record>();
 				recordList = mainApp.getAbstracts();
 				if(recordList.size()==0){
@@ -251,31 +238,10 @@ public class MainViewController {
 							float resonance = mainApp.getResonance(rec.getProcessedNP(), finalList, weightedResonance.isSelected());
 							rec.setResonance(resonance);
 						}
-						// Weighted Resonance
-//						if(weightedResonance.isSelected()){
-//							float sum = 0f;
-//							for(Element e: finalList){
-//								sum += Math.pow(e.getInfluence(), 2);
-//							}
-//							for(Record rec: sortHelper){
-//								float recSum = 0f;
-//								for(Element e: rec.getProcessedNP()){
-//									recSum += Math.pow(e.getInfluence(), 2);
-//								}
-//								if(((float)Math.sqrt(sum*recSum))>0){
-//									float resonance = rec.getResonance();
-//									resonance = resonance / (float)Math.sqrt(sum*recSum);
-//									rec.setResonance(resonance);
-//								}
-//							}
-//						}
+
 						sortHelper.sort(new Comparator<Record>(){
 							@Override
 							public int compare(Record arg0, Record arg1) {
-//								if(Float.isNaN(arg0.getResonance()))
-//									return 1;
-//								if(Float.isNaN(arg1.getResonance()))
-//									return -1;
 								return Float.compare(arg1.getResonance(),arg0.getResonance());
 							}
 						});

@@ -14,8 +14,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -56,6 +59,8 @@ public class CompareDialogController {
     private TextField resonanceTextField;
     @FXML
     private Label statusLabel;
+    @FXML
+    private Button compareButton;
     
 	private Stage dialogStage;
 	private MainApp mainApp;
@@ -67,7 +72,10 @@ public class CompareDialogController {
 	
 	@FXML
 	private void handleCompare(){
+		compareButton.setDisable(true);
 		mainViewController.beforeMergeCount = new AtomicInteger(0);
+		nounData1.clear();
+		nounData2.clear();
 		CRAThread craThread = new CRAThread(null, mainViewController, null);
 		craThread.setMultiThreadDijkstra(true);
 		String textString1 = text1.getText();
@@ -76,41 +84,53 @@ public class CompareDialogController {
 
 			@Override
 			public void run() {
-				if(textString1.length()>0&&textString2.length()>0){
-					LinkedList<Element> influence1 = craThread.getInfluences(textString1);
-					LinkedList<Element> influence2 = craThread.getInfluences(textString2);
-					int k = 1;
-					for(Element e: influence1){
-						NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(e.getInfluence()));
-						nounData1.add(listItem);
-						k++;
-					}
-					k = 1;
-					for(Element e: influence2){
-						NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(e.getInfluence()));
-						nounData2.add(listItem);
-						k++;
-					}
-					float resonance = mainApp.getResonance(influence1, influence2, true);
-					resonanceTextField.setText(Float.toString(resonance));
-				}else{
-		            Alert alert = new Alert(AlertType.WARNING);
-		            alert.initOwner(mainApp.getPrimaryStage());
-		            alert.setTitle("No Texts");
-		            alert.setHeaderText("No texts given");
-		            alert.setContentText("Please fill both text fields with texts.");
-
-		            alert.showAndWait();
+				LinkedList<Element> influence1 = craThread.getInfluences(textString1);
+				LinkedList<Element> influence2 = craThread.getInfluences(textString2);
+				int k = 1;
+				for(Element e: influence1){
+					NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(e.getInfluence()));
+					nounData1.add(listItem);
+					k++;
 				}
+				k = 1;
+				for(Element e: influence2){
+					NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(e.getInfluence()));
+					nounData2.add(listItem);
+					k++;
+				}
+				float resonance = mainApp.getResonance(influence1, influence2, true);
+				resonanceTextField.setText(Float.toString(resonance));
+				
+				compareButton.setDisable(false);
 			}
 			
 		}).start();
+		
+	}
+	
+	public void showError(){
+	     Platform.runLater(new Runnable() {
+	         @Override public void run() {
+	             Alert alert = new Alert(AlertType.WARNING);
+	             alert.initOwner(mainApp.getPrimaryStage());
+	             alert.setTitle("No Texts");
+	             alert.setHeaderText("No texts given");
+	             alert.setContentText("Please fill both text fields with texts.");
+
+	             alert.showAndWait();
+	         }
+	       });
+
 	}
 	
 	public void setStatus(String text){
 	     Platform.runLater(new Runnable() {
 	         @Override public void run() {
-	        	 statusLabel.setText(text);
+	        	 if(text1.getText().length()>0&&text2.getText().length()>0){
+	        		 statusLabel.setText(text);
+	        	 }else{
+	        		 showError();
+	        	 }
 	         }
 	       });
 	}
@@ -130,6 +150,12 @@ public class CompareDialogController {
 		influencePositionColumn2.setCellValueFactory(cellData -> cellData.getValue().getPosition());
 		influenceNounPhraseColumn2.setCellValueFactory(cellData -> cellData.getValue().getNounPhrase());
 		influenceAverageColumn2.setCellValueFactory(cellData -> cellData.getValue().getAverage());
+		
+		compareButton.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override public void handle(ActionEvent e) {
+		    	handleCompare();
+		    }
+		});
 	}
     
     public void setDialogStage(Stage dialogStage) {

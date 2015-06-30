@@ -23,7 +23,7 @@
             <TableColumn fx:id="influenceAverageColumn2" minWidth="0.0" prefWidth="122.0" text="Average" />
          </columns>
       </TableView>
-      <Button layoutX="795.0" layoutY="210.0" mnemonicParsing="false" onAction="#handleCompare" text="Compare" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="215.0" />
+      <Button fx:id="compareButton" layoutX="795.0" layoutY="210.0" mnemonicParsing="false" text="Compare" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="215.0" />
       <Label layoutX="14.0" layoutY="214.0" text="Resonance: " AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="218.0" />
       <TextField fx:id="resonanceTextField" editable="false" layoutX="77.0" layoutY="215.0" prefHeight="25.0" prefWidth="368.0" AnchorPane.leftAnchor="77.0" AnchorPane.topAnchor="215.0" />
    </children>
