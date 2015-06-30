@@ -305,7 +305,6 @@ public class MainViewController {
 						finalList = new LinkedList<Element>();
 						HashMap<String, Float> avgHelper = new HashMap<String, Float>();
 						for(Record abstr: targetList){
-							System.out.println(abstr.getProcessedNP().size());
 							for(Element e: abstr.getProcessedNP()){
 								if(!finalList.contains(e)){
 									finalList.add(e);
