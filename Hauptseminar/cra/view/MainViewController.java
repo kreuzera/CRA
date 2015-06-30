@@ -68,6 +68,9 @@ public class MainViewController {
 	@FXML
 	private Spinner<Integer> printQuantity;
 	
+	@FXML
+	private CheckBox weightedResonance;
+	
 	
     @FXML
     private TableView<NounTableClass> influenceTable;
@@ -255,19 +258,22 @@ public class MainViewController {
 								}
 							}
 						}
-						float sum = 0f;
-						for(Element e: finalList){
-							sum += Math.pow(e.getInfluence(), 2);
-						}
-						for(Record rec: sortHelper){
-							float recSum = 0f;
-							for(Element e: rec.getProcessedNP()){
-								recSum += Math.pow(e.getInfluence(), 2);
+						// Weighted Resonance
+						if(weightedResonance.isSelected()){
+							float sum = 0f;
+							for(Element e: finalList){
+								sum += Math.pow(e.getInfluence(), 2);
 							}
-							if(((float)Math.sqrt(sum*recSum))>0){
-								float resonance = rec.getResonance();
-								resonance = resonance / (float)Math.sqrt(sum*recSum);
-								rec.setResonance(resonance);
+							for(Record rec: sortHelper){
+								float recSum = 0f;
+								for(Element e: rec.getProcessedNP()){
+									recSum += Math.pow(e.getInfluence(), 2);
+								}
+								if(((float)Math.sqrt(sum*recSum))>0){
+									float resonance = rec.getResonance();
+									resonance = resonance / (float)Math.sqrt(sum*recSum);
+									rec.setResonance(resonance);
+								}
 							}
 						}
 						sortHelper.sort(new Comparator<Record>(){

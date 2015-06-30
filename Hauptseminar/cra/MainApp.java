@@ -33,6 +33,7 @@ public class MainApp extends Application {
     private File file;
     private ObservableList<NounTableClass> nounData = FXCollections.observableArrayList();
     private ObservableList<ResonanceTableClass> resonanceData = FXCollections.observableArrayList();
+    private MainViewController mainViewController;
         
 	@Override
 	public void start(Stage primaryStage) {
@@ -62,6 +63,7 @@ public class MainApp extends Application {
             
             // Give the controller access to the main app.
             MainViewController controller = loader.getController();
+            mainViewController = controller;
             controller.setMainApp(this);
             
            
@@ -79,7 +81,10 @@ public class MainApp extends Application {
     
     public void loadXml(File xmlFile){
 		Reader fileReader = new Reader();
+		long start = System.currentTimeMillis();
+		mainViewController.setStatus("Loading file...");
     	setAbstracts(fileReader.getAbstracts(xmlFile));
+    	mainViewController.setStatus("File loaded in "+(System.currentTimeMillis()-start)+"ms");
     }
     
     private void openWebpages(URI uri) {

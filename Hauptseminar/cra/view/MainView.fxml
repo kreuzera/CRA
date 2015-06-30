@@ -12,19 +12,19 @@
       <Label fx:id="filePath" layoutX="10.0" layoutY="14.0" text="Please select file..." AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="14.0" />
       <Button layoutX="518.0" layoutY="6.0" mnemonicParsing="false" onAction="#handleBrowse" text="Browse..." AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
       <Separator layoutX="74.0" layoutY="44.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="45.0" />
-      <Button fx:id="analyseButton" defaultButton="true" layoutX="392.0" layoutY="163.0" mnemonicParsing="false" onAction="#handleAnalyse" prefHeight="25.0" prefWidth="62.0" text="Analyse" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="163.0" />
+      <Button fx:id="analyseButton" defaultButton="true" layoutX="784.0" layoutY="162.0" mnemonicParsing="false" onAction="#handleAnalyse" prefHeight="25.0" prefWidth="62.0" text="Analyse" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="157.0" />
       <Label layoutX="9.0" layoutY="96.0" text="Measure" AnchorPane.leftAnchor="9.0" />
       <Label layoutX="16.0" layoutY="59.0" text="NLP Library" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="59.0" />
       <ComboBox fx:id="library" layoutX="294.0" layoutY="56.0" prefHeight="25.0" prefWidth="211.0" AnchorPane.rightAnchor="10.0" />
       <ComboBox fx:id="measure" layoutX="294.0" layoutY="92.0" prefHeight="25.0" prefWidth="211.0" AnchorPane.rightAnchor="10.0" />
       <Spinner fx:id="printQuantity" editable="true" layoutX="294.0" layoutY="125.0" prefHeight="25.0" prefWidth="211.0" AnchorPane.rightAnchor="10.0" />
       <Label layoutX="10.0" layoutY="129.0" text="Number of Results to print" AnchorPane.leftAnchor="10.0" />
-      <Separator layoutX="14.0" layoutY="195.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
-      <Button layoutX="387.0" layoutY="163.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" text="Cancel" AnchorPane.rightAnchor="84.0" />
-      <Label fx:id="statusLabel" layoutY="167.0" prefHeight="17.0" prefWidth="376.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="157.0" AnchorPane.topAnchor="167.0" />
-      <AnchorPane layoutX="-43.0" layoutY="163.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="197.0">
+      <Separator layoutX="10.0" layoutY="217.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="190.0" />
+      <Button layoutX="710.0" layoutY="157.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" text="Cancel" AnchorPane.rightAnchor="84.0" />
+      <Label fx:id="statusLabel" layoutX="10.0" layoutY="486.0" prefHeight="17.0" prefWidth="376.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="486.0" />
+      <AnchorPane layoutX="10.0" layoutY="193.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="193.0">
          <children>
-            <SplitPane dividerPositions="0.32038834951456313" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+            <SplitPane dividerPositions="0.32038834951456313" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                      <children>
@@ -52,5 +52,7 @@
             </SplitPane>
          </children>
       </AnchorPane>
+      <CheckBox fx:id="weightedResonance" layoutX="15.0" layoutY="161.0" mnemonicParsing="false" selected="true" text="Calculate weighted resonance" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="161.0" />
+      <Separator layoutX="10.0" layoutY="479.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="479.0" />
    </children>
 </AnchorPane>
