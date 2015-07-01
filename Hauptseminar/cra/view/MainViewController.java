@@ -152,7 +152,7 @@ public class MainViewController {
 		            public void run() {
 		        		try {
 		        			while(!algoFinished){
-		        				String status = "Analysing abstracts: "+Math.round(((float)counter.get()/numberOfAbstract)*100)+"% in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration);
+		        				String status = "Analysing abstracts: "+Math.round(((double)counter.get()/numberOfAbstract)*100)+"% in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration);
 		        				System.out.println(status);
 		        				setStatus(status);
 		        				Thread.sleep(1000);        				
@@ -188,7 +188,7 @@ public class MainViewController {
 						for(Record rec: targetList){
 							for(Element e: rec.getProcessedNP()){
 								count++;
-								setStatus("Calculating average: "+Math.round(((float)count/wordCount.get())*100)+"%");
+								setStatus("Calculating average: "+Math.round(((double)count/wordCount.get())*100)+"%");
 								if(!finalList.contains(e)){
 									Element dummy = new Element(e.getNounPhrase());
 									dummy.setInfluence(e.getInfluence());
@@ -199,31 +199,27 @@ public class MainViewController {
 										if(f.equals(e))
 											temp = f;
 									}
-									float influence  = temp.getInfluence();
-									if(!Float.isNaN(e.getInfluence()))
+									double influence  = temp.getInfluence();
+									if(!Double.isNaN(e.getInfluence()))
 											influence += e.getInfluence();
 									temp.setInfluence(influence);
 								}
 							}
 						}
 						for(Element e: finalList){
-							float influence = e.getInfluence();
+							double influence = e.getInfluence();
 							e.setInfluence(influence/numberOfAbstract);
 						}
 						finalList.sort(new Comparator<Element>(){
 							@Override
 							public int compare(Element o1, Element o2) {
-//								if(Float.isNaN(o1.getInfluence()))
-//									return 1;
-//								if(Float.isNaN(o2.getInfluence()))
-//									return -1;
-								return Float.compare(o2.getInfluence(),o1.getInfluence());
+								return Double.compare(o2.getInfluence(),o1.getInfluence());
 							}
 						});
 						k = 1;
 						for(Element e: finalList){
 							print += k+". "+e.getNounPhrase()+": "+e.getInfluence()+"\n";
-							NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(e.getInfluence()));
+							NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Double.toString(e.getInfluence()));
 							mainApp.getNounData().add(listItem);
 							k++;
 							if(k>printQuantity.getValue())
@@ -233,16 +229,16 @@ public class MainViewController {
 						count = 0;
 						for(Record rec: targetList){
 							count ++;
-							setStatus("Calculating Resonance: "+Math.round(((float)count/targetList.size())*100)+"%");
+							setStatus("Calculating Resonance: "+Math.round(((double)count/targetList.size())*100)+"%");
 							sortHelper.add(rec);
-							float resonance = mainApp.getResonance(rec.getProcessedNP(), finalList, weightedResonance.isSelected());
+							double resonance = mainApp.getResonance(rec.getProcessedNP(), finalList, weightedResonance.isSelected());
 							rec.setResonance(resonance);
 						}
 
 						sortHelper.sort(new Comparator<Record>(){
 							@Override
 							public int compare(Record arg0, Record arg1) {
-								return Float.compare(arg1.getResonance(),arg0.getResonance());
+								return Double.compare(arg1.getResonance(),arg0.getResonance());
 							}
 						});
 						k=1;
@@ -254,7 +250,7 @@ public class MainViewController {
 								else
 									authors +=", "+s;
 							}
-							ResonanceTableClass tempRec = new ResonanceTableClass(k, rec.getTitle(), Float.toString(rec.getResonance()), rec.getUrlID(), rec.getDb(), authors,rec.getAbstractText());
+							ResonanceTableClass tempRec = new ResonanceTableClass(k, rec.getTitle(), Double.toString(rec.getResonance()), rec.getUrlID(), rec.getDb(), authors,rec.getAbstractText());
 							mainApp.getResonanceData().add(tempRec);
 							k++;
 						}
@@ -262,14 +258,14 @@ public class MainViewController {
 						break;
 					case 1:
 						finalList = new LinkedList<Element>();
-						HashMap<String, Float> avgHelper = new HashMap<String, Float>();
+						HashMap<String, Double> avgHelper = new HashMap<String, Double>();
 						for(Record abstr: targetList){
 							for(Element e: abstr.getProcessedNP()){
 								if(!finalList.contains(e)){
 									finalList.add(e);
-									avgHelper.put(e.getNounPhrase(), (float)e.getNeighbour().size());
+									avgHelper.put(e.getNounPhrase(), (double)e.getNeighbour().size());
 								}else{
-									float temp = avgHelper.get(e.getNounPhrase());
+									double temp = avgHelper.get(e.getNounPhrase());
 									temp += e.getNeighbour().size();
 									avgHelper.put(e.getNounPhrase(), temp);
 								}
@@ -277,7 +273,7 @@ public class MainViewController {
 						}
 						for(Element e: finalList){
 //							System.out.println(avgHelper.get(e.getNounPhrase()));
-							float avg = avgHelper.get(e.getNounPhrase())/numberOfAbstract;
+							double avg = avgHelper.get(e.getNounPhrase())/numberOfAbstract;
 //							System.out.println(avg);
 							avgHelper.put(e.getNounPhrase(), avg);
 						}
@@ -292,7 +288,7 @@ public class MainViewController {
 						k = 1;
 						for(Element e: finalList){
 							print += k+". "+e.getNounPhrase()+": "+avgHelper.get(e.getNounPhrase())+"\n";	
-							NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(avgHelper.get(e.getNounPhrase())));
+							NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Double.toString(avgHelper.get(e.getNounPhrase())));
 							mainApp.getNounData().add(listItem);
 							k++;
 							if(k>printQuantity.getValue())

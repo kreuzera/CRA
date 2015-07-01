@@ -26,5 +26,6 @@
       <Button fx:id="compareButton" layoutX="795.0" layoutY="210.0" mnemonicParsing="false" text="Compare" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="215.0" />
       <Label layoutX="14.0" layoutY="214.0" text="Resonance: " AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="218.0" />
       <TextField fx:id="resonanceTextField" editable="false" layoutX="77.0" layoutY="215.0" prefHeight="25.0" prefWidth="368.0" AnchorPane.leftAnchor="77.0" AnchorPane.topAnchor="215.0" />
+      <Button layoutX="755.0" layoutY="215.0" mnemonicParsing="false" onAction="#handleClear" prefHeight="25.0" prefWidth="63.0" text="Clear" />
    </children>
 </AnchorPane>

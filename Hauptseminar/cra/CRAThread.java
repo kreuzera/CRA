@@ -100,7 +100,7 @@ public class CRAThread extends Thread{
 
 				for(Element e: mergeList){
 					if(((mergeList.size()-1)*(mergeList.size()-2)/2)>0){
-						float influence = e.getInfluence()/((float)(mergeList.size()-1)*(mergeList.size()-2)/2);
+						double influence = e.getInfluence()/((double)(mergeList.size()-1)*(mergeList.size()-2)/2);
 						e.setInfluence(influence);
 					}
 				}

@@ -9,7 +9,7 @@ public class Record {
 	private String abstractText = "";
 	private LinkedList<String> authors = new LinkedList<String>();
 	private LinkedList<Element> processedNP;
-	private float resonance = 0f;
+	private double resonance = 0f;
 	private String urlID = "";
 	private String db = "";
 	
@@ -53,10 +53,10 @@ public class Record {
 	public void setProcessedNP(LinkedList<Element> processedNP) {
 		this.processedNP = processedNP;
 	}
-	public float getResonance() {
+	public double getResonance() {
 		return resonance;
 	}
-	public void setResonance(float resonance) {
+	public void setResonance(double resonance) {
 		this.resonance = resonance;
 	}
 	public String getUrlID() {

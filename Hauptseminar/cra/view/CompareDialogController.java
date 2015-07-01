@@ -83,7 +83,7 @@ public class CompareDialogController {
 				Comparator<Element> comparator = new Comparator<Element>(){
 					@Override
 					public int compare(Element arg0, Element arg1) {
-						return Float.compare(arg1.getInfluence(), arg0.getInfluence());
+						return Double.compare(arg1.getInfluence(), arg0.getInfluence());
 					}
 					
 				};
@@ -91,24 +91,30 @@ public class CompareDialogController {
 				influence2.sort(comparator);
 				int k = 1;
 				for(Element e: influence1){
-					NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(e.getInfluence()));
+					NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Double.toString(e.getInfluence()));
 					nounData1.add(listItem);
 					k++;
 				}
 				k = 1;
 				for(Element e: influence2){
-					NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Float.toString(e.getInfluence()));
+					NounTableClass listItem = new NounTableClass(k, e.getNounPhrase(), Double.toString(e.getInfluence()));
 					nounData2.add(listItem);
 					k++;
 				}
-				float resonance = mainApp.getResonance(influence1, influence2, true);
-				resonanceTextField.setText(Float.toString(resonance));
+				double resonance = mainApp.getResonance(influence1, influence2, true);
+				resonanceTextField.setText(Double.toString(resonance));
 				
 				compareButton.setDisable(false);
 			}
 			
 		}).start();
 		
+	}
+	
+	@FXML
+	private void handleClear(){
+		text1.clear();
+		text2.clear();
 	}
 	
 	public void showError(){

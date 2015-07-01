@@ -108,8 +108,8 @@ public class MainApp extends Application {
         }
     }
     
-    public float getResonance(LinkedList<Element> text1, LinkedList<Element> text2, boolean weighted){
-    	float resonance = 0;
+    public double getResonance(LinkedList<Element> text1, LinkedList<Element> text2, boolean weighted){
+    	double resonance = 0;
 		for(Element e1: text1){
 			for(Element e2: text2){
 				if(e1.equals(e2)){
@@ -118,16 +118,16 @@ public class MainApp extends Application {
 			}
 		}
 		if(weighted){
-			float sum1 = 0f;
+			double sum1 = 0f;
 			for(Element e: text1){
 				sum1 += Math.pow(e.getInfluence(), 2);
 			}
-			float sum2 = 0f;
+			double sum2 = 0f;
 			for(Element e: text2){
 				sum2 += Math.pow(e.getInfluence(), 2);
 			}
-			if(((float)Math.sqrt(sum1*sum2))>0){
-				resonance = resonance / (float)Math.sqrt(sum1*sum2);
+			if(((double)Math.sqrt(sum1*sum2))>0){
+				resonance = resonance / (double)Math.sqrt(sum1*sum2);
 			}
 
 		}

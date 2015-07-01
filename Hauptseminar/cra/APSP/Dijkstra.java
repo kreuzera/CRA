@@ -17,6 +17,7 @@ public class Dijkstra extends Thread{
 	private ConcurrentLinkedQueue<Element> listOfNodes;
 	private MainViewController controller;
 	private static AtomicInteger count;
+	private static int totalCount;
 	
 	public Dijkstra(ConcurrentLinkedQueue<Element> listOfNodes, MainViewController controller){
 		this.listOfNodes = listOfNodes;
@@ -26,9 +27,9 @@ public class Dijkstra extends Thread{
 	@Override
 	public void run(){
 		count = new AtomicInteger(0);
-		int totalCount = listOfNodes.size();
+		totalCount = listOfNodes.size();
 		while(!listOfNodes.isEmpty()&&!this.isInterrupted()){
-			System.out.println(count.get()+"/"+totalCount);
+//			System.out.println(count.get()+"/"+totalCount);
 			count.incrementAndGet();
 			Element e = listOfNodes.poll();
 			computePaths(e);
@@ -102,7 +103,7 @@ public class Dijkstra extends Thread{
 			
 			if(path.getTarget()!=last){
 				for(Element in: overList.keySet()){
-					in.setInfluence(in.getInfluence()+((float)overList.get(in)/totalPaths));
+					in.setInfluence(in.getInfluence()+((double)overList.get(in)/totalPaths));
 				}
 				totalPaths = 0;
 				overList.clear();
@@ -143,6 +144,14 @@ public class Dijkstra extends Thread{
 		}
 		copyTime += (System.currentTimeMillis()-start);
 		return copy;
+	}
+
+	public static AtomicInteger getCount() {
+		return count;
+	}
+
+	public static void setCount(AtomicInteger count) {
+		Dijkstra.count = count;
 	}
 
 }
