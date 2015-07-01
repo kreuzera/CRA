@@ -3,13 +3,6 @@ package cra.view;
 import java.util.Comparator;
 import java.util.LinkedList;
 
-
-
-
-
-
-
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javafx.application.Platform;
