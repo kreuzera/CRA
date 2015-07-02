@@ -2,7 +2,7 @@ package cra.view;
 
 import java.util.Comparator;
 import java.util.LinkedList;
-
+import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javafx.application.Platform;
@@ -71,9 +71,23 @@ public class CompareDialogController {
 		nounData1.clear();
 		nounData2.clear();
 		CRAThread craThread = new CRAThread(null, mainViewController, null);
-		craThread.setMultiThreadDijkstra(true);
-		String textString1 = text1.getText();
-		String textString2 = text2.getText();
+//		craThread.setMultiThreadDijkstra(true);
+		StringTokenizer token = new StringTokenizer(text1.getText());
+		String fixedTextString1 = "";
+		while(token.hasMoreTokens()){
+			String test = token.nextToken();
+			fixedTextString1 += test+" ";
+		}
+		token = new StringTokenizer(text2.getText());
+		String fixedTextString2 = "";
+		while(token.hasMoreTokens()){
+			String test = token.nextToken();
+			fixedTextString2 += test+" ";
+		}
+		String textString1 = fixedTextString1;
+		String textString2 = fixedTextString2;
+		text1.setText(textString1);
+		text2.setText(textString2);
 		new Thread(new Runnable(){
 
 			@Override
@@ -115,6 +129,9 @@ public class CompareDialogController {
 	private void handleClear(){
 		text1.clear();
 		text2.clear();
+		nounData1.clear();
+		nounData2.clear();
+		resonanceTextField.clear();
 	}
 	
 	public void showError(){

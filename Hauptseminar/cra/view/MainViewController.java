@@ -305,7 +305,7 @@ public class MainViewController {
 				setStatus(numberOfAbstract+" abstracts analyzed in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
 				System.out.println(numberOfAbstract+" abstracts analyzed in "+getDurationBreakdown(System.currentTimeMillis()-algoDuration));
 				System.out.println("Total time to tag "+beforeMergeCount.get()+" words: "+LinkFilterThread.getTotalTagTime()+"ms split across "+Runtime.getRuntime().availableProcessors()+" Threads equals "+(LinkFilterThread.getTotalTagTime()/Runtime.getRuntime().availableProcessors())+"ms per Thread on average.\nAfter Merge for each individual abstract there were "+wordCount.get()+" words in total left.");
-				System.out.println("Total number of words after merge of all abstracts: "+sizeAfterMerge);
+				System.out.println("Total number of words after merge of all abstracts: "+beforeMergeCount.get()+"=>"+sizeAfterMerge+". Average words per abstract:"+ (beforeMergeCount.get()/numberOfAbstract));
 				analyseButton.setDisable(false);
 			}
 			
